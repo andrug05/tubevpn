@@ -118,7 +118,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete catalog --yes || true
+          # Remove both the previous release and its Git tag so the new tag
+          # points at this exact source commit (not the old main commit).
+          gh release delete catalog --yes --cleanup-tag || true
           gh release create catalog dist/release/* \
+            --target "$GITHUB_SHA" \
             --title 'RideTube MGU Store catalog' \
             --notes 'MGU Store tools for RideTube. The RideTube app is built on the head unit from the repository branch via mgu-repo.json, using the BMW SDK donor already on the car. Includes the VLESS-enabled service, Node.js runtime and optional Full-width touch.'
