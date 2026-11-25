@@ -5,15 +5,19 @@
       "id": "jap_ridetube",
       "kind": "app",
       "path": "apps/jap_ridetube",
-      "mguHmi": ["ID7"],
+      "mguHmi": [
+        "ID7"
+      ],
       "requires": {
-        "jap-ridetube-d": "0.6.0",
+        "jap-ridetube-d": "0.6.1",
         "mgu-render": "0.6.11",
         "mgu-inputgate": "1.0.0"
       },
       "build": {
         "python": "kit/tools/build.py",
-        "args": ["{id}"],
+        "args": [
+          "{id}"
+        ],
         "sdk": "oap-sdk",
         "output": "dist/{id}@{version}.tgz",
         "shared": [
