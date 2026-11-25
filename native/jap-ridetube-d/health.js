@@ -12,13 +12,13 @@ const cp = require('child_process');
 const readline = require('readline');
 
 // the keys, in the order a report lists them (the app's page keys its rows by name)
-const KEYS = ['service', 'node', 'node22', 'python', 'ytdlp', 'uid', 'lease', 'dns', 'tls', 'free', 'audio', 'socket'];
+const KEYS = ['service', 'node', 'node22', 'python', 'ytdlp', 'uid', 'lease', 'dns', 'proxy', 'tls', 'youtube', 'free', 'audio', 'socket'];
 const FLOOR = 256 << 20;    // ytfetch.py's MIN_FREE: a fetch stops when less is left on the cache's file system
 const BUDGET_MS = 8000;     // the whole run (opts.healthMs overrides it); a local probe gets 3 s of it at most
 const TEXT_MAX = 120;
 // what ytfetch.py check --json may say in "info" (its _why): anything else shows as "failed"
 const PHRASES = ['loaded', 'resolved', 'no uplink lease', 'skipped: no DNS', 'looked up by the proxy', 'proxy setting wrong', 'proxy failed', 'name not resolved', 'timed out', 'certificate not trusted',
-    'TLS error', 'connection refused', 'connection reset', 'network unreachable', 'no route to host', 'not found', 'failed'];
+    'TLS error', 'connection refused', 'connection reset', 'network unreachable', 'no route to host', 'not found', 'failed', 'proxy exit IP verified (address hidden)', 'VLESS/Store proxy is not active', 'YouTube returned a bot challenge'];
 const phrase = (x) => (PHRASES.indexOf(x) >= 0 || /^(HTTP \d{3}|wrong clock: \d{4}-\d\d-\d\d)$/.test(x) ? x : 'failed');
 
 function clean(s) {
@@ -74,6 +74,10 @@ function fetcherCheck(d, ms, put) {
             } else if (o.name === 'dns') {
                 put('dns', ok, info === 'looked up by the proxy' && ok ? 'youtube.com is looked up by the Store\'s proxy'
                     : ok ? 'youtube.com resolves through the uplink DNS' : 'DNS for youtube.com: ' + info + (px ? ' (the Store\'s proxy)' : ''));
+            } else if (o.name === 'proxy') {
+                put('proxy', ok, info);
+            } else if (o.name === 'youtube') {
+                put('youtube', ok, info);
             } else if (o.name === 'tls') {
                 put('tls', ok, (!ok ? 'no TLS to youtube.com: ' + info : clk ? 'TLS to youtube.com works with the certificate date check skipped: wrong clock (' + clk + ')' : 'TLS to youtube.com works')
                     + (px ? ' (through the Store\'s proxy)' : ''));
@@ -106,7 +110,7 @@ function probes(d, version, ms, budget) {
             return first(o.fetcher[0], ['--version'], ms).then(function (ls) { put('python', true, 'mgu-python: ' + clean(ls[0]).slice(0, 40)); },
                 function (e) { put('python', false, 'mgu-python ' + e.message); });
         }],
-        [['ytdlp', 'dns', 'tls'], function (put) { return fetcherCheck(d, budget, put); }],
+        [['ytdlp', 'dns', 'proxy', 'tls', 'youtube'], function (put) { return fetcherCheck(d, budget, put); }],
         [['uid'], function (put) {
             try { put('uid', true, 'internet uid ' + d.uid()); } catch (e) { put('uid', false, e.message); }
         }],
