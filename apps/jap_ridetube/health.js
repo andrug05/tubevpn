@@ -13,7 +13,7 @@ module.exports = function healthPage(o) {
     const LIT = { literal: true }, LITB = { literal: true, font: 'bold' };
     const GREEN = '#35d07f', GREY = '#5c6380';
     // the service's keys in the order shown (the rows come as each probe ends); others after them, as they came
-    const ORDER = ['service', 'node', 'node22', 'python', 'ytdlp', 'uid', 'lease', 'dns', 'tls', 'free', 'audio', 'socket', 'width'];
+    const ORDER = ['service', 'node', 'node22', 'python', 'ytdlp', 'uid', 'lease', 'dns', 'proxy', 'tls', 'youtube', 'free', 'audio', 'socket', 'width'];
     const rank = (k) => { const i = ORDER.indexOf(k); return i < 0 ? ORDER.length : i; };
     // "... unknown" (e.g. the socket lock before that package lands): not a failure, a grey dash
     const unknown = (r) => !r.ok && (r.hint || /\bunknown\b/i.test(r.text));   // (hint: a suggestion, not a failure)
