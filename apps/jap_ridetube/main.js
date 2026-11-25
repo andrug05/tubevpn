@@ -176,12 +176,14 @@ mgu.run({
             show(m);
             if (backKey[m] && ctx.focus) ctx.focus(backKey[m]);
         }
-        let remote = null;   // the phone remote page (cap remote; below, with the other pages)
+        let remote = null;   // the phone remote page
+        let vless = null;    // local VLESS profile manager
         ctl.on('up', () => { model.setConnected(true); changed(); });
         ctl.on('down', () => { model.setConnected(false); if (remote) remote.down(); changed(); });
         ctl.on('msg', (m) => {
             model.onMsg(m);
             if (remote) remote.onMsg(m);
+            if (vless) vless.onMsg(m);
             if (m.ev === 'error') log.warn('jap-ridetube-d: ' + m.msg);
             if (m.ev === 'state') log.info('jap-ridetube-d: ' + m.state + (m.id ? ' ' + m.id : ''));
             if (m.ev === 'auth') { log.info('jap-ridetube-d: account ' + m.state); if (m.state === 'signed_in') { if (mode === 'signin') show('home'); openFeed(); } }
@@ -260,6 +262,15 @@ mgu.run({
             show('remote');
             ui.open('VIEW');
         });
+        // VLESS: local profiles and proxy selection (credentials are never exposed to the app).
+        ui.onClick('BTN_VLESS', () => {
+            if (!model.connected || !vless) return;
+            vless.refresh(); show('vless'); ui.open('VIEW');
+        });
+        for (let i = 0; i < 10; i++) {
+            ui.onClick('BTN_VLESS_' + (i + 1), () => { if (vless) vless.selectIndex(i); });
+        }
+        ui.onClick('BTN_VLESS_OFF', () => { if (vless) vless.select('off'); });
         // Send logs to the developer: the logs page asks first; pressed again there (the HMI's own screen has no Send button), sends
         let logsFrom = 'home';
         function openLogs() {
@@ -1122,6 +1133,9 @@ mgu.run({
         let OFF = translate('The RideTube service (jap-ridetube-d) is not running');
         let OFF2 = translate('Install the RideTube service (jap-ridetube-d) from the MGU Store');
         PAGES.health = require('./health')({ model, say, fit, t: whole, message: whole, count, C, focus: () => focusKey, edge: () => (FILL ? RX === 0 : null), get X0() { return X0; }, get TOP() { return TOP; }, H, W, get OFF() { return OFF; }, get OFF2() { return OFF2; } });
+        vless = require('./vless')({ model, ui, send: (o) => ctl.send(o), changed, say, fit, t: whole, message: whole, C, focus: () => focusKey, get X0() { return X0; }, get TOP() { return TOP; }, H, W, get OFF() { return OFF; }, get OFF2() { return OFF2; } });
+        PAGES.vless = vless.draw;
+
         remote = require('./remote')({ model, send: (o) => ctl.send(o), changed, lang: getLanguage, say, fit, t: whole, message: whole, C, QR, focus: () => focusKey, get X0() { return X0; }, get TOP() { return TOP; }, H, W, get OFF() { return OFF; }, get OFF2() { return OFF2; } });
         PAGES.remote = remote.draw;
         // a phone action, as a tap: a search shows its results, a video plays (the picture only as the parked rule allows)
