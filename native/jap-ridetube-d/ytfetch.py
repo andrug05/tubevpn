@@ -2194,9 +2194,7 @@ def _why(e):
 
 
 def check_json(a):
-    """check --json: the daemon's health probes only (yt-dlp loads, DNS, TLS to YouTube), no extract, no fetch, no
-    file written. One JSON line each, flushed as it is known: {"ev":"check","name","ok","s","info"} (+ "version",
-    "servers"), then {"ev":"done","ok"}. No address in any line: the daemon shows them on the car's screen."""
+    """Fast network diagnostics: yt-dlp load, DNS, proxy exit IP, TLS and YouTube's watch-page bot challenge."""
     ok_all = []
 
     def line(name, ok, t0, info, **kw):
@@ -2215,7 +2213,7 @@ def check_json(a):
     servers = install_dns(a.lease)
     resolved = False
     try:
-        if PROXY:  # the proxy looks the names up: TLS is tried whatever this row says
+        if PROXY:
             resolved = True
             line('dns', 'error' not in PROXY, t, 'proxy setting wrong' if 'error' in PROXY else 'looked up by the proxy',
                  servers=len(servers))
@@ -2225,9 +2223,26 @@ def check_json(a):
             line('dns', bool(servers), t, 'resolved' if servers else 'no uplink lease', servers=len(servers))
     except OSError as e:
         line('dns', False, t, _why(e), servers=len(servers))
+
+    # This request uses the same socket tunnel installed for yt-dlp. Never print the address or proxy credentials.
+    t = time.monotonic()
+    if not PROXY or 'error' in PROXY:
+        line('proxy', False, t, 'VLESS/Store proxy is not active')
+    else:
+        try:
+            with urllib.request.urlopen('https://api.ipify.org?format=json', context=tls_ctx(), timeout=7) as r:
+                j = json.loads(r.read(512).decode('utf-8'))
+            ip = j.get('ip')
+            if not isinstance(ip, str) or not ip or len(ip) > 64:
+                raise ValueError('invalid IP response')
+            line('proxy', True, t, 'proxy exit IP verified (address hidden)')
+        except Exception as e:  # noqa: BLE001
+            line('proxy', False, t, _why(e))
+
     t = time.monotonic()
     if not resolved:
         line('tls', False, t, 'skipped: no DNS')
+        line('youtube', False, t, 'skipped: no DNS')
     else:
         try:
             ctx = tls_ctx()
@@ -2235,6 +2250,19 @@ def check_json(a):
                 line('tls', r.status == 200, t, f'HTTP {r.status}')
         except Exception as e:  # noqa: BLE001
             line('tls', False, t, _why(e))
+        t = time.monotonic()
+        try:
+            req = urllib.request.Request('https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                                         headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req, context=tls_ctx(), timeout=7) as r:
+                body = r.read(512 * 1024).decode('utf-8', 'replace').lower()
+                blocked = ('sign in to confirm' in body or 'not a bot' in body or
+                           'unusual traffic' in body)
+                line('youtube', not blocked, t,
+                     'YouTube returned a bot challenge' if blocked else f'watch page HTTP {r.status}; no bot challenge')
+        except Exception as e:  # noqa: BLE001
+            msg = bot_check(e) or _why(e)
+            line('youtube', False, t, 'YouTube request: ' + msg)
     print(json.dumps({'ev': 'done', 'ok': all(ok_all)}), flush=True)
     return 0 if all(ok_all) else 1
 
