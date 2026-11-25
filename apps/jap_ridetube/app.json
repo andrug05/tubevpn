@@ -2,7 +2,7 @@
   "id": "jap_ridetube",
   "title": "RideTube",
   "description": "Video in the car: an unofficial client for YouTube. Your Home, Subscriptions, Watch later, History and playlists (signed in on the car), search, channels and chapters; the sound through the car's media player, the picture only while parked (a podcast view while driving). Needs the jap-ridetube-d tool.",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "license": "GPL-3.0-or-later",
   "vendor": "custom",
   "loggingId": "OAA6",
@@ -172,6 +172,66 @@
           "button",
           "BTN_REMOTE",
           "Phone remote"
+        ],
+        [
+          "button",
+          "BTN_VLESS",
+          "VLESS proxy"
+        ],
+        [
+          "button",
+          "BTN_VLESS_1",
+          "VLESS profile 1"
+        ],
+        [
+          "button",
+          "BTN_VLESS_2",
+          "VLESS profile 2"
+        ],
+        [
+          "button",
+          "BTN_VLESS_3",
+          "VLESS profile 3"
+        ],
+        [
+          "button",
+          "BTN_VLESS_4",
+          "VLESS profile 4"
+        ],
+        [
+          "button",
+          "BTN_VLESS_5",
+          "VLESS profile 5"
+        ],
+        [
+          "button",
+          "BTN_VLESS_6",
+          "VLESS profile 6"
+        ],
+        [
+          "button",
+          "BTN_VLESS_7",
+          "VLESS profile 7"
+        ],
+        [
+          "button",
+          "BTN_VLESS_8",
+          "VLESS profile 8"
+        ],
+        [
+          "button",
+          "BTN_VLESS_9",
+          "VLESS profile 9"
+        ],
+        [
+          "button",
+          "BTN_VLESS_10",
+          "VLESS profile 10"
+        ],
+        [
+          "button",
+          "BTN_VLESS_OFF",
+          "VLESS off"
         ],
         [
           "button",
