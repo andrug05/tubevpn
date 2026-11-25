@@ -22,20 +22,28 @@ if (mode === 'hang') {
     line('evil', true, 'injected');
     line('ytdlp', true, 'loaded', { version: '1.2.3.4\nrm -rf' });
     line('dns', 'yes', '10.1.2.3 aa:bb:cc:dd:ee:ff 2a02:1810:abcd::1 KnownVid001\nMy Secret Holiday Video ' + 'x'.repeat(500));
+    line('proxy', false, 'via 81.82.83.84 for KnownVid001 My Secret Holiday Video');
     line('tls', false, 'via 81.82.83.84 for KnownVid001 My Secret Holiday Video');
+    line('youtube', false, 'YouTube returned a bot challenge');
     say({ ev: 'done', ok: false });
     process.exit(1);
 } else {
     line('ytdlp', true, 'loaded', { version: '2026.10.26' });
     if (mode === 'offline') {
         line('dns', false, 'name not resolved', { servers: 2 });
+        line('proxy', false, 'VLESS/Store proxy is not active');
         line('tls', false, 'skipped: no DNS');
+        line('youtube', false, 'skipped: no DNS');
     } else if (mode === 'expired') {
         line('dns', true, 'resolved', { servers: 2 });
+        line('proxy', true, 'proxy exit IP verified (address hidden)');
         line('tls', false, 'wrong clock: 2030-01-01');
+        line('youtube', true, 'watch page HTTP 200; no bot challenge');
     } else {
         line('dns', true, 'resolved', { servers: 2 });
+        line('proxy', true, 'proxy exit IP verified (address hidden)');
         line('tls', true, 'HTTP 200');
+        line('youtube', true, 'watch page HTTP 200; no bot challenge');
     }
     say({ ev: 'done', ok: mode === 'ok' });
     process.exit(mode === 'ok' ? 0 : 1);
