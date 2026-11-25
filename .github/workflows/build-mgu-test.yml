@@ -102,6 +102,35 @@ jobs:
           chmod +x build.sh tools/*.sh check.sh
           sh -x ./build.sh ../ytdec/build/target/ytdec
 
+      - name: Verify Xray inside the packed MGU service archive
+        working-directory: native/jap-ridetube-d
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, subprocess, tarfile, tempfile
+          component = json.loads(pathlib.Path('component.json').read_text())
+          version = component['version']
+          archive = pathlib.Path('dist') / f"jap-ridetube-d@{version}.tgz"
+          assert archive.is_file(), f"service archive missing: {archive}"
+          entries = [item for item in component['files'] if item.get('path') == 'xray']
+          assert len(entries) == 1 and entries[0].get('from') == 'build/xray', 'component.json must package build/xray as xray'
+          with tarfile.open(archive, 'r:gz') as tar:
+              matches = [m for m in tar.getmembers() if m.isfile() and pathlib.PurePosixPath(m.name).name == 'xray']
+              assert len(matches) == 1, f"expected exactly one xray in service archive, found {[m.name for m in matches]}"
+              member = matches[0]
+              assert member.size >= 1024 * 1024, f"Xray payload is unexpectedly small: {member.size} bytes"
+              assert member.mode & 0o111, f"Xray is not executable in archive: mode={oct(member.mode)}"
+              stream = tar.extractfile(member)
+              assert stream is not None, 'cannot read Xray payload from archive'
+              with tempfile.TemporaryDirectory() as tmp:
+                  binary = pathlib.Path(tmp) / 'xray'
+                  binary.write_bytes(stream.read())
+                  binary.chmod(0o755)
+                  result = subprocess.run([str(binary), 'version'], text=True, capture_output=True, timeout=20)
+                  assert result.returncode == 0, f"packed Xray failed to run: {result.stderr[-2000:]}"
+                  print(f"Verified {member.name}: {member.size} bytes, mode {oct(member.mode)}")
+                  print(result.stdout.splitlines()[0] if result.stdout else 'Xray version command succeeded')
+          PY
+
       - name: Fetch required published MGU runtime artifacts
         run: |
           set -euo pipefail
