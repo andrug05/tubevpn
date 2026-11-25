@@ -267,5 +267,7 @@
   "Ready": "Подключён",
   "Connecting": "Подключается",
   "Choose profiles in the RideTube menu": "Выбирай профиль в меню RideTube",
-  "VLESS profile": "Профиль VLESS"
+  "VLESS profile": "Профиль VLESS",
+  "Refresh": "Обновить",
+  "+{count} more profiles": "+{count} профилей ещё"
 }
