@@ -1091,7 +1091,7 @@ class CheckJson(unittest.TestCase):
             p = subprocess.run([sys.executable, '-I', os.path.join(ROOT, 'ytfetch.py'), 'check', '--json', '--cache-dir', tmp,
                                 '--lease', lease, '--pyz', pyz], capture_output=True, text=True, timeout=30, env={}, cwd='/')
             evs = [json.loads(x) for x in p.stdout.splitlines()]
-            self.assertEqual([e['ev'] for e in evs], ['check'] * 3 + ['done'], p.stderr)
+            self.assertEqual([e['ev'] for e in evs], ['check'] * 5 + ['done'], p.stderr)
             self.assertEqual([e['name'] for e in evs[:3]], ['ytdlp', 'dns', 'tls'])
             for e in evs[:3]:
                 self.assertEqual(sorted(e), sorted(['ev', 'name', 'ok', 's', 'info'] + {'ytdlp': ['version'], 'dns': ['servers']}.get(e['name'], [])))
