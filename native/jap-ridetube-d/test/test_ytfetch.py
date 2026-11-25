@@ -1105,7 +1105,7 @@ class CheckJson(unittest.TestCase):
                 self.skipTest('a DNS server answers on 127.0.0.1 here')
             self.assertEqual(p.returncode, 1)
             self.assertEqual((d['ok'], d['servers'], d['info']), (False, 1, 'name not resolved'))
-            self.assertEqual((proxy['ok'], proxy['info']), (False, 'skipped: no DNS'))
+            self.assertEqual((proxy['ok'], proxy['info']), (False, 'VLESS/Store proxy is not active'))
             self.assertEqual((t['ok'], t['info']), (False, 'skipped: no DNS'))
             self.assertEqual((youtube['ok'], youtube['info']), (False, 'skipped: no DNS'))
             self.assertEqual(evs[5], {'ev': 'done', 'ok': False})
