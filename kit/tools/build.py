@@ -504,8 +504,18 @@ def build(app_id, language='en'):
     # the corner credit of each catalog the package carries, drawn while that language is chosen (credits.js)
     locale['credits'] = {tag: credit(tag)['corner'] for tag in languages() if credit(tag)}
     json.dump(locale, open(os.path.join(src, 'javascript', 'kit', 'locale.json'), 'w', encoding='utf-8', newline='\n'), ensure_ascii=False)
-    shutil.copy(os.path.join(SDK, 'index.js'), os.path.join(src, 'node_modules', 'oap-sdk', 'index.js'))
-    shutil.copy(os.path.join(SDK, 'package.json'), os.path.join(src, 'node_modules', 'oap-sdk', 'package.json'))
+    # BMW's oap-sdk is proprietary and must not be committed or published.
+    # A release package intentionally omits it; MGU Store supplies it from
+    # a stock BMW donor app on the head unit at install time.
+    sdk_index = os.path.join(SDK, 'index.js')
+    sdk_package = os.path.join(SDK, 'package.json')
+    if os.path.isfile(sdk_index) and os.path.isfile(sdk_package):
+        sdk_dst = os.path.join(src, 'node_modules', 'oap-sdk')
+        os.makedirs(sdk_dst, exist_ok=True)
+        shutil.copy(sdk_index, os.path.join(sdk_dst, 'index.js'))
+        shutil.copy(sdk_package, os.path.join(sdk_dst, 'package.json'))
+    else:
+        print('  oap-sdk omitted: MGU supplies the BMW SDK from a stock donor app')
 
     # --- rhmiData: package format (inside source/) and installed format ---
     icon = spec['id'] + '_icon.png'
