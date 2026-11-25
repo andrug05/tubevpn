@@ -54,6 +54,39 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential cmake pkg-config ffmpeg file curl
 
+      - name: Build RideTube OAP release package
+        run: |
+          set -euo pipefail
+          python3 kit/tools/build.py jap_ridetube
+          python3 - <<'PY'
+          import importlib.util, json, pathlib, time
+          spec = json.loads(pathlib.Path('apps/jap_ridetube/app.json').read_text())
+          version = spec['version']
+          src = pathlib.Path('dist') / f"jap_ridetube@{version}.tgz"
+          assert src.is_file(), f"app build did not produce {src}"
+          modspec = importlib.util.spec_from_file_location('release', 'tools/release.py')
+          mod = importlib.util.module_from_spec(modspec)
+          modspec.loader.exec_module(mod)
+          out = pathlib.Path('dist') / 'release-app'
+          out.mkdir(parents=True, exist_ok=True)
+          dst = out / src.name
+          mod.strip_sdk(str(src), str(dst), int(time.time()))
+          print(f"Prepared release package: {dst} ({dst.stat().st_size} bytes)")
+          PY
+
+      - name: Publish RideTube app release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          VERSION="$(python3 -c "import json; print(json.load(open('apps/jap_ridetube/app.json'))['version'])")"
+          TAG="jap_ridetube-v${VERSION}"
+          gh release delete "${TAG}" --yes --cleanup-tag || true
+          gh release create "${TAG}" "dist/release-app/jap_ridetube@${VERSION}.tgz" \
+            --target "$GITHUB_SHA" \
+            --title "RideTube ${VERSION}" \
+            --notes "RideTube OAP package for BMW MGU ID7. Install from the GitHub Releases source in MGU Store. Requires the RideTube service tool from the catalog release."
+
       - name: Build BMW ytdec target binary
         working-directory: native/ytdec
         run: |
