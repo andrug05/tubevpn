@@ -5,7 +5,6 @@
       "id": "jap_ridetube",
       "kind": "app",
       "path": "apps/jap_ridetube",
-      "manifest": "app.json",
       "mguHmi": ["ID7"],
       "requires": {
         "jap-ridetube-d": "0.6.0",
@@ -16,7 +15,19 @@
         "python": "kit/tools/build.py",
         "args": ["{id}"],
         "sdk": "oap-sdk",
-        "output": "dist/{id}@{version}.tgz"
+        "output": "dist/{id}@{version}.tgz",
+        "shared": [
+          "kit/runtime",
+          "kit/platform",
+          "kit/localization",
+          "kit/tools/build.py",
+          "kit/tools/pack_data.py",
+          "kit/tools/localize.py",
+          "kit/tools/locale-revisions.json",
+          "kit/tools/make_icon.js",
+          "kit/tools/oapgen",
+          "oap-sdk"
+        ]
       }
     }
   ]
