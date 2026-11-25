@@ -14,7 +14,7 @@ const readline = require('readline');
 // the keys, in the order a report lists them (the app's page keys its rows by name)
 const KEYS = ['service', 'node', 'node22', 'python', 'ytdlp', 'uid', 'lease', 'dns', 'proxy', 'tls', 'youtube', 'free', 'audio', 'socket'];
 const FLOOR = 256 << 20;    // ytfetch.py's MIN_FREE: a fetch stops when less is left on the cache's file system
-const BUDGET_MS = 8000;     // the whole run (opts.healthMs overrides it); a local probe gets 3 s of it at most
+const BUDGET_MS = 22000;     // the whole run (opts.healthMs overrides it); a local probe gets 3 s of it at most
 const TEXT_MAX = 120;
 // what ytfetch.py check --json may say in "info" (its _why): anything else shows as "failed"
 const PHRASES = ['loaded', 'resolved', 'no uplink lease', 'skipped: no DNS', 'looked up by the proxy', 'proxy setting wrong', 'proxy failed', 'name not resolved', 'timed out', 'certificate not trusted',
