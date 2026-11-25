@@ -29,7 +29,7 @@ const THUMB_SIZES = { 57600: [160, 90], 230400: [320, 180] };
 const VERSION = '0.6.1';   // component.json's (test_ytd.js checks): sent with a log report
 // the day this build was released (UTC), bumped with VERSION at each release (tools/release.py refuses one in the
 // future). A head unit clock before it is provably wrong: only then does TLS skip the certificate dates (certTime)
-const BUILT = '2026-11-26';
+const BUILT = '2026-11-25';
 // what `hello` says this build answers for real. The frozen names: health, related, hist (feed hist|liked), ytdlp,
 // remote, proxy, stream, download (library, download, remove, auto_download). A package adds its name here (through the integrator) once its command works
 const CAPS = ['related', 'hist', 'health', 'remote', 'ytdlp', 'download', 'proxy'];
