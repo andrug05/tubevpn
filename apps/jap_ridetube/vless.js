@@ -40,6 +40,7 @@ module.exports = function vlessPage(o) {
         } else if (m.ev === 'vless_select') {
             st.loading = false; st.notice = m.result && m.result.active ? t('Selected. Connecting...') : t('VLESS is off');
             st.selectedAt = Date.now(); refresh();
+            setTimeout(refresh, 2500);
         } else if (m.ev === 'error' && m.cmd === 'vless_select') {
             st.loading = false; st.error = String(m.msg || t('VLESS profile selection failed')).slice(0, 140); o.changed();
         }
@@ -66,7 +67,7 @@ module.exports = function vlessPage(o) {
             cv.text(t('No VLESS profiles saved'), X0, y + 8, 24, C.dim, LIT); y += 48;
         }
         if (st.profiles.length > rows.length) cv.text(message('+{count} more profiles', { count: st.profiles.length - rows.length }), X0, y, 20, C.dim, LIT);
-        if (st.error) cv.text(fit(st.error, 22, W - X0 - 40, LIT), X0, bottom - 112, 22, '#ffaaaa', LIT);
+        if (st.error) cv.text(fit(cv, st.error, 22, W - X0 - 40, LIT), X0, bottom - 112, 22, '#ffaaaa', LIT);
         else if (st.notice) cv.text(fit(st.notice, 22, W - X0 - 40, LIT), X0, bottom - 112, 22, C.dim, LIT);
         cv.text(fit(t('To add a profile, open Phone remote and paste the vless:// link from your phone.'), 20, W - X0 - 40, LIT), X0, bottom - 72, 20, C.dim, LIT);
         if (cv.own && !st.loading) {
@@ -79,5 +80,6 @@ module.exports = function vlessPage(o) {
             cv.text(t('Choose profiles in the RideTube menu'), X0, bottom - 28, 20, C.dim, LIT);
         }
     }
+    menu();
     return { onMsg, refresh, select, selectIndex, draw };
 };
