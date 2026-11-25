@@ -1092,12 +1092,12 @@ class CheckJson(unittest.TestCase):
                                 '--lease', lease, '--pyz', pyz], capture_output=True, text=True, timeout=30, env={}, cwd='/')
             evs = [json.loads(x) for x in p.stdout.splitlines()]
             self.assertEqual([e['ev'] for e in evs], ['check'] * 5 + ['done'], p.stderr)
-            self.assertEqual([e['name'] for e in evs[:3]], ['ytdlp', 'dns', 'tls'])
-            for e in evs[:3]:
+            self.assertEqual([e['name'] for e in evs[:5]], ['ytdlp', 'dns', 'proxy', 'tls', 'youtube'])
+            for e in evs[:5]:
                 self.assertEqual(sorted(e), sorted(['ev', 'name', 'ok', 's', 'info'] + {'ytdlp': ['version'], 'dns': ['servers']}.get(e['name'], [])))
                 self.assertIsInstance(e['ok'], bool)
                 self.assertIsInstance(e['info'], str)
-            y, d, t = evs[:3]
+            y, d, proxy, t, youtube = evs[:5]
             self.assertEqual((y['ok'], y['version']), (True, '2099.01.02'))
             self.assertEqual(sorted(os.listdir(tmp)), ['lease.json', 'pyz'], 'no file written')
             self.assertNotIn('127.0.0.1', p.stdout, 'no address in a line')
@@ -1105,8 +1105,10 @@ class CheckJson(unittest.TestCase):
                 self.skipTest('a DNS server answers on 127.0.0.1 here')
             self.assertEqual(p.returncode, 1)
             self.assertEqual((d['ok'], d['servers'], d['info']), (False, 1, 'name not resolved'))
+            self.assertEqual((proxy['ok'], proxy['info']), (False, 'skipped: no DNS'))
             self.assertEqual((t['ok'], t['info']), (False, 'skipped: no DNS'))
-            self.assertEqual(evs[3], {'ev': 'done', 'ok': False})
+            self.assertEqual((youtube['ok'], youtube['info']), (False, 'skipped: no DNS'))
+            self.assertEqual(evs[5], {'ev': 'done', 'ok': False})
         finally:
             shutil.rmtree(tmp)
 
