@@ -9,7 +9,7 @@
         "ID7"
       ],
       "requires": {
-        "jap-ridetube-d": "0.6.2",
+        "jap-ridetube-d": "0.6.3",
         "mgu-render": "0.6.11",
         "mgu-inputgate": "1.0.0"
       },
