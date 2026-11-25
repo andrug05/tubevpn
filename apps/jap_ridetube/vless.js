@@ -68,8 +68,8 @@ module.exports = function vlessPage(o) {
         }
         if (st.profiles.length > rows.length) cv.text(message('+{count} more profiles', { count: st.profiles.length - rows.length }), X0, y, 20, C.dim, LIT);
         if (st.error) cv.text(fit(cv, st.error, 22, W - X0 - 40, LIT), X0, bottom - 112, 22, '#ffaaaa', LIT);
-        else if (st.notice) cv.text(fit(st.notice, 22, W - X0 - 40, LIT), X0, bottom - 112, 22, C.dim, LIT);
-        cv.text(fit(t('To add a profile, open Phone remote and paste the vless:// link from your phone.'), 20, W - X0 - 40, LIT), X0, bottom - 72, 20, C.dim, LIT);
+        else if (st.notice) cv.text(fit(cv, st.notice, 22, W - X0 - 40, LIT), X0, bottom - 112, 22, C.dim, LIT);
+        cv.text(fit(cv, t('To add a profile, open Phone remote and paste the vless:// link from your phone.'), 20, W - X0 - 40, LIT), X0, bottom - 72, 20, C.dim, LIT);
         if (cv.own && !st.loading) {
             const label = active ? t('Disable VLESS') : t('Refresh');
             const bw = Math.max(250, cv.textWidth(label, 26, BOLD) + 60), by = bottom - 40;
