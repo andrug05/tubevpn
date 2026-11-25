@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/vless-xray-ridetube
+      - releases
     paths:
       - 'apps/**'
       - 'kit/**'
@@ -103,6 +104,9 @@ jobs:
           assert app['build']['python'] == 'kit/tools/build.py'
           assert app['build']['sdk'] == 'oap-sdk'
           assert app['build']['output'] == 'dist/{id}@{version}.tgz'
+          required_shared = {'kit/runtime', 'kit/platform', 'kit/localization', 'kit/tools/build.py', 'kit/tools/pack_data.py', 'kit/tools/localize.py', 'kit/tools/locale-revisions.json', 'kit/tools/make_icon.js', 'kit/tools/oapgen', 'oap-sdk'}
+          assert required_shared.issubset(set(app['build'].get('shared', []))), 'MGU source build is missing shared SDK/build inputs'
+          assert pathlib.Path(app['path'], app['manifest']).is_file() if app.get('manifest') else pathlib.Path(app['path'], 'app.json').is_file()
           spec = json.loads(pathlib.Path('apps/jap_ridetube/app.json').read_text())
           assert spec['version'] == '0.6.5'
           assert any(item[1] == 'BTN_REMOTE' for item in spec['screens'][1]['items']), 'Phone remote entry missing from app source'
