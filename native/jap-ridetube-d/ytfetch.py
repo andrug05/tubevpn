@@ -2194,13 +2194,34 @@ def _why(e):
 
 
 def check_json(a):
-    """Fast network diagnostics: yt-dlp load, DNS, proxy exit IP, TLS and YouTube's watch-page bot challenge."""
+    """Fast network diagnostics: yt-dlp load, DNS, VLESS exit IP, TLS and YouTube's watch-page bot challenge."""
     ok_all = []
 
     def line(name, ok, t0, info, **kw):
         ok_all.append(bool(ok))
         print(json.dumps(dict(ev='check', name=name, ok=bool(ok), s=round(time.monotonic() - t0, 2), info=info, **kw)),
               flush=True)
+
+    def get_https(url, limit, timeout):
+        """An HTTPS GET using the same explicit tunnel() as yt-dlp; http.client's cached connector bypasses our socket hook."""
+        u = urllib.parse.urlsplit(url)
+        if u.scheme != 'https' or not u.hostname:
+            raise ValueError('https only')
+        ctx = tls_ctx()
+        conn = http.client.HTTPSConnection(u.hostname, u.port or 443, timeout=timeout, context=ctx)
+        try:
+            if PROXY:
+                raw = tunnel(PROXY, u.hostname, u.port or 443, timeout)
+                conn.sock = ctx.wrap_socket(raw, server_hostname=u.hostname)
+            conn.request('GET', (u.path or '/') + ('?' + u.query if u.query else ''),
+                         headers={'User-Agent': 'Mozilla/5.0'})
+            r = conn.getresponse()
+            body = r.read(limit + 1)
+            if len(body) > limit:
+                body = body[:limit]
+            return r.status, body
+        finally:
+            conn.close()
 
     t = time.monotonic()
     try:
@@ -2214,8 +2235,8 @@ def check_json(a):
     resolved = False
     try:
         if PROXY:
-            resolved = True
-            line('dns', 'error' not in PROXY, t, 'proxy setting wrong' if 'error' in PROXY else 'looked up by the proxy',
+            resolved = 'error' not in PROXY
+            line('dns', resolved, t, 'proxy setting wrong' if not resolved else 'looked up by the proxy',
                  servers=len(servers))
         else:
             socket.getaddrinfo('www.youtube.com', 443)
@@ -2224,16 +2245,16 @@ def check_json(a):
     except OSError as e:
         line('dns', False, t, _why(e), servers=len(servers))
 
-    # This request uses the same socket tunnel installed for yt-dlp. Never print the address or proxy credentials.
+    # No IP or proxy credentials are emitted: only whether the configured tunnel has a working public exit.
     t = time.monotonic()
     if not PROXY or 'error' in PROXY:
         line('proxy', False, t, 'VLESS/Store proxy is not active')
     else:
         try:
-            with urllib.request.urlopen('https://api.ipify.org?format=json', context=tls_ctx(), timeout=7) as r:
-                j = json.loads(r.read(512).decode('utf-8'))
+            status, data = get_https('https://api.ipify.org?format=json', 512, 7)
+            j = json.loads(data.decode('utf-8'))
             ip = j.get('ip')
-            if not isinstance(ip, str) or not ip or len(ip) > 64:
+            if status != 200 or not isinstance(ip, str) or not ip or len(ip) > 64:
                 raise ValueError('invalid IP response')
             line('proxy', True, t, 'proxy exit IP verified (address hidden)')
         except Exception as e:  # noqa: BLE001
@@ -2245,21 +2266,18 @@ def check_json(a):
         line('youtube', False, t, 'skipped: no DNS')
     else:
         try:
-            ctx = tls_ctx()
-            with urllib.request.urlopen('https://www.youtube.com/robots.txt', context=ctx, timeout=5) as r:
-                line('tls', r.status == 200, t, f'HTTP {r.status}')
+            status, _ = get_https('https://www.youtube.com/robots.txt', 4096, 5)
+            line('tls', status == 200, t, f'HTTP {status}')
         except Exception as e:  # noqa: BLE001
             line('tls', False, t, _why(e))
         t = time.monotonic()
         try:
-            req = urllib.request.Request('https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                                         headers={'User-Agent': 'Mozilla/5.0'})
-            with urllib.request.urlopen(req, context=tls_ctx(), timeout=7) as r:
-                body = r.read(512 * 1024).decode('utf-8', 'replace').lower()
-                blocked = ('sign in to confirm' in body or 'not a bot' in body or
-                           'unusual traffic' in body)
-                line('youtube', not blocked, t,
-                     'YouTube returned a bot challenge' if blocked else f'watch page HTTP {r.status}; no bot challenge')
+            status, data = get_https('https://www.youtube.com/watch?v=dQw4w9WgXcQ', 512 * 1024, 7)
+            body = data.decode('utf-8', 'replace').lower()
+            blocked = ('sign in to confirm' in body or 'not a bot' in body or
+                       'unusual traffic' in body)
+            line('youtube', status == 200 and not blocked, t,
+                 'YouTube returned a bot challenge' if blocked else f'watch page HTTP {status}; no bot challenge')
         except Exception as e:  # noqa: BLE001
             msg = bot_check(e) or _why(e)
             line('youtube', False, t, 'YouTube request: ' + msg)
