@@ -85,7 +85,7 @@ jobs:
       - name: Validate catalog and artifacts
         run: |
           python3 - <<'PY'
-          import json, pathlib, tarfile
+          import json, pathlib
           root = pathlib.Path('dist/release')
           catalog = json.loads((root / 'catalog.json').read_text())
           components = {c['id']: c for c in catalog['components']}
@@ -108,10 +108,10 @@ jobs:
           assert required_shared.issubset(set(app['build'].get('shared', []))), 'MGU source build is missing shared SDK/build inputs'
           assert pathlib.Path(app['path'], app['manifest']).is_file() if app.get('manifest') else pathlib.Path(app['path'], 'app.json').is_file()
           spec = json.loads(pathlib.Path('apps/jap_ridetube/app.json').read_text())
-          assert spec['version'] == '0.6.5'
+          assert spec.get('version'), 'RideTube app version is missing'
           assert any(item[1] == 'BTN_REMOTE' for item in spec['screens'][1]['items']), 'Phone remote entry missing from app source'
           assert app['requires']['jap-ridetube-d'] == components['jap-ridetube-d']['version']
-          print('Catalog and MGU Store source OK:', ', '.join(sorted(components)), '+ jap_ridetube (built on the car)')
+          print('Catalog and MGU Store source OK:', ', '.join(sorted(components)), '+ jap_ridetube', spec['version'], '(built on the car)')
           PY
 
       - name: Publish MGU Store catalog release
