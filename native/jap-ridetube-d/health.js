@@ -19,7 +19,7 @@ const TEXT_MAX = 120;
 // what ytfetch.py check --json may say in "info" (its _why): anything else shows as "failed"
 const PHRASES = ['loaded', 'resolved', 'no uplink lease', 'skipped: no DNS', 'looked up by the proxy', 'proxy setting wrong', 'proxy failed', 'name not resolved', 'timed out', 'certificate not trusted',
     'TLS error', 'connection refused', 'connection reset', 'network unreachable', 'no route to host', 'not found', 'failed', 'proxy exit IP verified (address hidden)', 'VLESS/Store proxy is not active', 'YouTube returned a bot challenge'];
-const phrase = (x) => (PHRASES.indexOf(x) >= 0 || /^(HTTP \\d{3}|wrong clock: \\d{4}-\\d\\d-\\d\\d|watch page HTTP \\d{3}; no bot challenge|YouTube request: (?:HTTP \\d{3}|proxy failed|name not resolved|timed out|TLS error|certificate not trusted|network unreachable|no route to host|connection refused|connection reset|failed))$/.test(x) ? x : 'failed');
+const phrase = (x) => (PHRASES.indexOf(x) >= 0 || /^(HTTP \d{3}|wrong clock: \d{4}-\d\d-\d\d|watch page HTTP \d{3}; no bot challenge|YouTube request: (?:HTTP \d{3}|proxy failed|name not resolved|timed out|TLS error|certificate not trusted|network unreachable|no route to host|connection refused|connection reset|failed))$/.test(x) ? x : 'failed');
 
 function clean(s) {
     return String(s).replace(/[^\x20-\x7e]+/g, ' ')
