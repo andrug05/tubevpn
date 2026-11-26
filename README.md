@@ -1,211 +1,157 @@
 # RideTube
 
-[English](README.md) · [简体中文](README.zh-CN.md)
+[English](https://github.com/JustAnotherPU/RideTube/blob/main/README.md) · [简体中文](README.zh-CN.md)
 
-RideTube shows in English, French, Dutch, German, Spanish, Italian, Portuguese, Russian or Simplified Chinese
-(Language setting). Chinese translation by 小白151
-(JackieZ123430). The [Chinese guide](README.zh-CN.md) includes setup, playback settings, and font coverage.
+RideTube поддерживает английский, французский, нидерландский, немецкий, испанский, итальянский, португальский, русский и упрощённый китайский языки (выбираются в настройках). Перевод на китайский выполнен 小白151 (JackieZ123430). В [китайском руководстве](README.zh-CN.md) описаны установка, настройки воспроизведения и поддержка шрифтов.
 
-> **Experimental and unofficial.** RideTube is an unofficial client for YouTube. It is not affiliated with,
-> endorsed by or sponsored by Google or YouTube. Use it at your own risk. You are responsible for following
-> YouTube's Terms of Service and the laws of your country, and for using it safely: by default the picture
-> shows only while the car is parked.
+> **Экспериментальное неофициальное приложение.** RideTube — неофициальный клиент YouTube. Он не связан с Google или YouTube, не одобрен и не спонсируется этими компаниями. Используйте его на свой страх и риск. Вы несёте ответственность за соблюдение Условий использования YouTube и законодательства своей страны, а также за безопасное использование приложения. По умолчанию изображение отображается только на стоящем автомобиле.
 
 | | |
 |---|---|
-| ![Home](docs/media/home.png) | ![Player](docs/media/player.png) |
-| Home: your shelves, Continue watching first | The player, with chapters on the progress bar |
-| ![Podcast mode while driving](docs/media/driving.png) | ![Sign in](docs/media/signin.png) |
-| While driving: the sound plays on, no picture | Sign in with a code on your phone |
+| ![Главный экран](docs/media/home.png) | ![Проигрыватель](docs/media/player.png) |
+| Главный экран: ваши подборки, продолжение просмотра в начале | Проигрыватель с главами на шкале воспроизведения |
+| ![Режим подкаста во время движения](docs/media/driving.png) | ![Вход](docs/media/signin.png) |
+| Во время движения: звук воспроизводится, изображение скрыто | Вход с помощью кода на телефоне |
 
-Rendered on a computer with demo data (Blender open movie titles), not photographed in a car.
+Скриншоты сделаны на компьютере с демонстрационными данными (названия фильмов из открытой библиотеки Blender), а не сфотографированы в автомобиле.
 
-RideTube plays videos on the BMW iDrive 7 head unit (MGU), installed from the MGU Store. Everything runs on
-the car, over the car's own internet connection:
+RideTube воспроизводит видео YouTube на головном устройстве BMW с iDrive 7 (MGU). Установка выполняется через MGU Store. Всё работает непосредственно в автомобиле, используя его собственное интернет-соединение:
 
-- **Home**, **Subscriptions**, **Watch later**, **History** and your **Playlists**, once you sign in on the car
-  with the TV device sign-in (a code to enter on your phone; RideTube never sees your password).
-- When a list runs out, the first related video plays after a 5 s countdown. The steering wheel's next button
-  skips a segment, a video or a chapter, or goes to a related video.
-- Search, channel pages, chapters, the video quality and fill or fit for the picture.
-- Skip segments from [SponsorBlock](https://sponsor.ajay.app) (sponsors, self-promotion, intros and similar).
-- The sound plays through the car's own media player.
-- While driving, the picture is replaced by a podcast view (title, progress, controls) and the sound plays on.
-  The picture comes back when the car is parked again.
-- Videos stream. The head unit fetches about 2 minutes ahead of where you are, keeps that part in RAM (a few
-  tens of MB at most) and drops what you have watched, so stopping after five minutes uses about five minutes of
-  data. A far seek, forward or back, usually starts playing in a second or two.
-- **Download** in the player keeps a video on the car until you remove it (press **Downloaded**). Downloads play
-  with no internet, from **Library** on the rail or **On this car** on Home, signed in or not. One downloads at a
-  time, never while a video plays, and only with at least 4 GB free on the head unit.
-- A setting can download the 3, 5 or 10 newest Subscriptions videos by itself, only on Wi-Fi and only signed in.
-  It is off by default. Those videos go once watched.
-- Signed in, what you watch goes to your YouTube history, as on a TV.
-- **Send logs to the developer** (in the menu, and on the error screen when a video fails) sends RideTube's
-  recent service log and the health check result once, after you confirm, with the account details and the
-  videos you watched removed. The health check lines carry no IP or MAC address, video id or title. You get a
-  short code to add to your GitHub issue. Nothing is sent otherwise.
-- **Health check** (in the menu) checks the service and its tools, the internet connection, free space and the
-  car's audio service, one row per check.
+- **Главная**, **Подписки**, **Посмотреть позже**, **История** и ваши **Плейлисты** доступны после входа в автомобиле через YouTube TV. Для авторизации нужно ввести код на телефоне; RideTube никогда не получает ваш пароль.
+- Когда список видео заканчивается, через 5 секунд автоматически запускается первое рекомендованное видео. Кнопка Next на руле позволяет пропустить сегмент, видео или главу либо перейти к рекомендованному видео.
+- Поиск, страницы каналов, главы, выбор качества видео и режим отображения Fit или Fill.
+- Пропуск сегментов через [SponsorBlock](https://sponsor.ajay.app): спонсорские блоки, самореклама, вступления и другие подобные фрагменты.
+- Звук воспроизводится через штатный медиаплеер автомобиля.
+- Во время движения изображение заменяется режимом подкаста (название, прогресс и элементы управления), а звук продолжает воспроизводиться. Когда автомобиль останавливается, изображение появляется снова.
+- Видео передаются потоково. Головное устройство загружает примерно 2 минуты видео вперёд, хранит этот фрагмент в оперативной памяти (не более нескольких десятков мегабайт) и удаляет уже просмотренные данные. Поэтому при остановке воспроизведения через пять минут расход трафика составляет примерно пять минут просмотра. При перемотке вперёд или назад воспроизведение обычно возобновляется через 1–2 секунды.
+- Кнопка **Download** в проигрывателе сохраняет видео в автомобиле до его удаления (нажатием **Downloaded**). Загруженные видео можно смотреть без интернета через раздел **Library** на боковой панели или **On this car** на главном экране. Авторизация не требуется. Одновременно загружается только одно видео; загрузка не выполняется во время воспроизведения, а на головном устройстве должно быть не менее 4 ГБ свободного места.
+- Настройка автоматической загрузки позволяет скачивать 3, 5 или 10 последних видео из подписок. Функция работает только через Wi-Fi и при выполненном входе в аккаунт. По умолчанию она выключена. После просмотра такие видео удаляются.
+- После авторизации просмотренные видео добавляются в историю YouTube так же, как при использовании телевизора.
+- **Send logs to the developer** (в меню приложения и на экране ошибки при сбое видео) отправляет разработчику последний журнал работы RideTube и результат проверки состояния системы. Перед отправкой требуется подтверждение. Из журналов удаляются данные аккаунта и сведения о просмотренных видео. Строки проверки состояния не содержат IP- и MAC-адресов, идентификаторов и названий видео. После отправки вы получаете короткий код для добавления в обращение на GitHub. Без подтверждения ничего не отправляется.
+- **Health check** в меню проверяет работу сервиса и его инструментов, интернет-соединение, свободное место и аудиосервис автомобиля. Результат отображается отдельной строкой для каждой проверки.
 
-## Requirements
+## Требования
 
-- A BMW with iDrive 7 (MGU, `ID7`) and the [MGU Store](https://github.com/robertnisipeanu/mgu-store) installed.
-- The car online through the Store's uplink (`mgu-uplink`).
-- Installed for you as requirements, so keep their sources in the Store: from the Store's own source, the
-  renderer `mgu-render` 0.6.11 or newer, `mgu-deploy` 0.7.0 and `mgu-python` 1.0.2; from the Store's default
-  `cauliflowermossgrape/idrive7-apps` source, the controller gate `mgu-inputgate` 1.0.0.
+- Автомобиль BMW с iDrive 7 (MGU, \`ID7\`) и установленным [MGU Store](https://github.com/robertnisipeanu/mgu-store).
+- Подключение автомобиля к интернету через uplink Store (\`mgu-uplink\`).
+- Необходимые зависимости устанавливаются через MGU Store. Сохраните их источники в Store:
+  - Из собственного источника Store: рендерер \`mgu-render\` версии 0.6.11 или новее, \`mgu-deploy\` 0.7.0 и \`mgu-python\` 1.0.2.
+  - Из стандартного источника Store \`cauliflowermossgrape/idrive7-apps\`: контроллер ввода \`mgu-inputgate\` 1.0.0.
 
-## Install
+## Установка
 
-In the MGU Store, add the source
+В MGU Store добавьте источник:
 
-```
+\`\`\`
 JustAnotherPU/ridetube
-```
+\`\`\`
 
-and pick **Releases** when the Store asks what to follow. Type only `owner/repo`: the Store refuses a `:releases` at the end.
+Когда Store спросит, за какой веткой следить, выберите **Releases**. Указывайте только \`owner/repo\`: Store не принимает суффикс \`:releases\` в конце.
 
-Then install RideTube. The Store installs its service (`jap-ridetube-d`, the player, the yt-dlp fetcher and the
-video decoder) and `jap-node22`, the Node.js 22 that the service runs on, with it. Since 0.4.0 this source carries
-`jap-node22` itself (the same file as `JustAnotherPU/mgu-apps` publishes), so you no longer need to add mgu-apps.
+Затем установите RideTube. Вместе с приложением Store устанавливает его сервис (\`jap-ridetube-d\`, включающий проигрыватель, загрузчик yt-dlp и декодер видео) и \`jap-node22\` — Node.js 22, необходимый для работы сервиса. Начиная с версии 0.4.0, этот источник также содержит сам \`jap-node22\` (тот же файл публикуется в \`JustAnotherPU/mgu-apps\`), поэтому добавлять источник mgu-apps больше не требуется.
 
-Optional, on iDrive 7: Full-width touch (`mgu-render-id7-touch`, from this source) lets RideTube use the strip
-at the screen's left edge where the car's back arrow usually is, for a wider rail and tiles. Without it RideTube
-keeps out of that strip. Health check's width row says which one you have.
+**Дополнительно для iDrive 7:** инструмент Full-width touch (\`mgu-render-id7-touch\`) из этого источника позволяет RideTube использовать полосу у левого края экрана, где обычно находится кнопка возврата автомобиля. Это расширяет боковую панель и плитки. Без этого инструмента RideTube не использует данную область. В Health check можно посмотреть, какой вариант установлен.
 
-## Settings
+## Настройки
 
-- **Language**: Auto (follows the car's language when RideTube has it, else English), English, Français,
-  Nederlands, Deutsch, Español, Italiano, Português, Русский or 中文. YouTube's language and country follow the car's iDrive language setting (on Auto; the
-  country always), so feeds and search match what the car is set to.
-- **Video while driving**: off by default. Leave it off unless the car is coded for video in motion and only
-  passengers can see the screen. Switched on, it first shows a disclaimer and counts only once you press I agree;
-  Cancel turns it off again. You use it at your own risk: RideTube's authors are not responsible for any misuse,
-  accident, fine or damage. It takes effect only once switched on while the car is parked: pressed while driving,
-  the picture stays off until the next stop.
-- **Fill the screen**: off by default (black bars); on, the picture is cropped to fill the screen.
-- **Video quality**: auto (720p on Wi-Fi, 480p on phone data), 720p, 480p or 360p.
-- **Show members-only videos**: off by default. A channel can also be hidden from its page.
-- **Show Shorts**: off by default.
-- **SponsorBlock**, per category: skip, show a Skip button, or off.
-- **Parked: pause when the 12 V battery is under** 60, 65 (default) or 70 %, or never.
-- **Sign in** / **Sign out** in the app's menu.
+- **Language (Язык):** Auto (автоматически использует язык автомобиля, если RideTube его поддерживает, иначе — английский), English, Français, Nederlands, Deutsch, Español, Italiano, Português, Русский или 中文. Язык YouTube и страна соответствуют настройкам языка iDrive (при выборе Auto язык определяется автоматически; страна учитывается всегда), поэтому лента и результаты поиска соответствуют настройкам автомобиля.
+- **Video while driving (Видео во время движения):** по умолчанию выключено. Не включайте эту функцию, если автомобиль не закодирован для воспроизведения видео в движении и экран не предназначен исключительно для пассажиров. При включении сначала отображается предупреждение; настройка активируется только после нажатия I agree. Кнопка Cancel отменяет включение. Вы используете функцию на свой страх и риск: авторы RideTube не несут ответственности за неправильное использование, аварии, штрафы или повреждения. Настройка начинает действовать только после включения на стоящем автомобиле. Если включить её во время движения, изображение останется скрытым до следующей остановки.
+- **Fill the screen (Заполнить экран):** по умолчанию выключено (чёрные полосы по краям); при включении изображение обрезается, чтобы заполнить экран.
+- **Video quality (Качество видео):** Auto (720p при подключении к Wi-Fi, 480p при использовании мобильного интернета), 720p, 480p или 360p.
+- **Show members-only videos (Показывать видео только для участников):** по умолчанию выключено. Канал также можно скрыть непосредственно на его странице.
+- **Show Shorts (Показывать Shorts):** по умолчанию выключено.
+- **SponsorBlock:** для каждой категории можно выбрать автоматический пропуск, отображение кнопки Skip или отключение.
+- **Parked: pause when the 12 V battery is under (На стоянке: приостанавливать воспроизведение, если заряд 12-вольтовой батареи ниже):** 60, 65 (по умолчанию), 70 % или никогда.
+- **Sign in / Sign out:** вход и выход из аккаунта в меню приложения.
 
-The parked check reads the car's speed. A reading older than 5 seconds counts as driving.
+Проверка стоянки использует показания скорости автомобиля. Если показания старше 5 секунд, автомобиль считается движущимся.
 
-## Tested on
+## Проверено на
 
 | | |
 |---|---|
-| Car | BMW X5 xDrive45e (G05), iDrive 7 (MGU, ID7 HMI), firmware P18_23w44.2-1-3 |
-| Internet | the Store's uplink over home Wi-Fi and an iPhone hotspot |
+| Автомобиль | BMW X5 xDrive45e (G05), iDrive 7 (MGU, ID7 HMI), прошивка P18_23w44.2-1-3 |
+| Интернет | Uplink MGU Store через домашний Wi-Fi и точку доступа iPhone |
 
-One car only so far. Reports from other cars are welcome in the issues.
+Пока приложение проверено только на одном автомобиле. Отзывы владельцев других автомобилей приветствуются в разделе Issues.
 
-## Known limits
+## Известные ограничения
 
-- yt-dlp breaks now and then when YouTube changes. With "Update yt-dlp by itself" on (the default), the service
-  fetches the newest yt-dlp release on the car, checked against the release's sha256 sums, daily and after a play
-  fails; off, a fixed RideTube release brings a new yt-dlp (see `native/jap-ridetube-d/README.md`, "Updating
-  yt-dlp").
-- H.264 or VP9 (profile 0), up to 720p with 30 fps preferred, decoded on the head unit's GPU. Videos offered
-  only in other formats (AV1, HDR) do not play.
-- Signing in uses the TV device sign-in that YouTube's TV apps use. The client id is read from YouTube's TV
-  page when you sign in; RideTube ships none.
-- The switch from the first seconds of sound to the full file may be heard as a short break.
-- A wrong head unit clock. If the head unit's date is earlier than this release's day, the clock is wrong for
-  sure. RideTube then skips one TLS check, the certificate's dates, so videos still play. The certificate must
-  still come from a trusted authority and name the right host. The app warns you once, and the menu says "Wrong
-  clock" until you set the car's date and time. The risk while it lasts: someone who holds an old, expired
-  certificate of YouTube or another host RideTube uses, with its private key, and can reach the car's traffic,
-  could pose as that host. Thumbnails do not show while the clock is wrong. See
-  `native/jap-ridetube-d/README.md`, "Security notes".
-- RideTube's service runs as root. Its control socket is open only to the RideTube app's own user. If the
-  service cannot read which user that is on a fresh install, the socket is open to every app until it can; see
-  `native/jap-ridetube-d/README.md`, "Security notes".
+- **yt-dlp периодически перестаёт работать после изменений на стороне YouTube.** При включённой настройке "Update yt-dlp by itself" (по умолчанию) сервис ежедневно и после каждой неудачной попытки воспроизведения загружает на автомобиль последнюю версию yt-dlp, проверяя её по SHA256-суммам релиза. Если настройка выключена, новая версия yt-dlp поставляется вместе с обновлением RideTube (см. \`native/jap-ridetube-d/README.md\`, раздел "Updating yt-dlp").
+- Поддерживаются H.264 или VP9 (Profile 0), предпочтительно до 720p при 30 кадрах в секунду. Декодирование выполняется графическим процессором головного устройства. Видео, доступные только в других форматах (AV1, HDR), не воспроизводятся.
+- Для входа используется механизм авторизации YouTube TV, применяемый в телевизионных приложениях YouTube. Client ID считывается со страницы YouTube TV во время входа; RideTube не содержит собственного Client ID.
+- При переключении с первых секунд звука на полный файл может быть слышен короткий перерыв.
+- **Неправильные дата и время головного устройства.** Если дата головного устройства раньше даты выпуска этой версии приложения, часы заведомо настроены неправильно. В этом случае RideTube пропускает одну проверку TLS — проверку срока действия сертификата, чтобы видео продолжало воспроизводиться. Сертификат по-прежнему должен быть выдан доверенным центром сертификации и соответствовать имени нужного хоста. Приложение один раз предупреждает об этом, а в меню отображается "Wrong clock", пока дата и время автомобиля не будут исправлены. Риск: злоумышленник, у которого есть старый просроченный сертификат YouTube или другого используемого RideTube хоста вместе с закрытым ключом и возможность перехватить трафик автомобиля, может выдать себя за этот хост. При неправильных часах миниатюры не отображаются. Подробнее: \`native/jap-ridetube-d/README.md\`, раздел "Security notes".
+- **Сервис RideTube работает с правами root.** Управляющий сокет доступен только пользователю приложения RideTube. Если после новой установки сервис не может определить пользователя приложения, сокет временно доступен всем приложениям, пока пользователь не будет определён. Подробнее: \`native/jap-ridetube-d/README.md\`, раздел "Security notes".
 
-## Uninstall
+## Удаление
 
-1. In RideTube, **Sign out** (or later, remove "YouTube on TV" at https://myaccount.google.com/permissions):
-   uninstalling deletes the sign-in from the car, but Google keeps the grant until it is revoked.
-2. In the MGU Store, uninstall **RideTube**, then its service `jap-ridetube-d`. A bad update can be undone in the
-   Store while the previous version is kept.
+1. В RideTube выполните **Sign out** (или позднее отзовите разрешение "YouTube on TV" на странице https://myaccount.google.com/permissions). Удаление приложения стирает данные входа из автомобиля, но Google сохраняет выданное разрешение до его отдельного отзыва.
+2. В MGU Store удалите **RideTube**, а затем его сервис \`jap-ridetube-d\`. Если обновление оказалось неудачным, его можно отменить через Store, пока предыдущая версия ещё сохранена.
 
-## Layout
+## Структура проекта
 
-| Path | |
+| Путь | Назначение |
 |---|---|
-| `apps/jap_ridetube` | the app (Node 8, the iDrive's own app runtime) |
-| `kit/` | the idrive7-apps app kit, trimmed to the modules RideTube uses |
-| `native/jap-ridetube-d` | the service on the car: player, fetcher, account, search, thumbnails |
-| `native/ytdec` | the H.264 decoder that draws into the renderer's video layer |
-| `native/mgu-render-id7-touch` | Full-width touch, the optional Store tool that gives apps the screen's left edge |
-| `tools/release.py` | lays out the Store catalog (`catalog.json` and its assets) |
+| \`apps/jap_ridetube\` | Приложение (Node 8, собственная среда выполнения приложений iDrive) |
+| \`kit/\` | Набор инструментов idrive7-apps, сокращённый до модулей, используемых RideTube |
+| \`native/jap-ridetube-d\` | Сервис автомобиля: проигрыватель, загрузчик, аккаунт, поиск и миниатюры |
+| \`native/ytdec\` | Декодер H.264, выводящий изображение в видеослой рендерера |
+| \`native/mgu-render-id7-touch\` | Дополнительный инструмент Full-width touch, предоставляющий приложениям левую часть экрана |
+| \`tools/release.py\` | Формирование каталога Store (\`catalog.json\` и его ресурсов) |
 
-## Build and test on a computer
+## Сборка и тестирование на компьютере
 
-```sh
-node kit/tools/test_runtime.js && node kit/tools/test_life.js && node kit/tools/test_parked.js \
+\`\`\`sh
+node kit/tools/test_runtime.js && node kit/tools/test_life.js && node kit/tools/test_parked.js \\
   && node kit/tools/test_qr.js
 (cd native/jap-ridetube-d && node test/test_ytd.js && node test/test_thumb.js && python3.12 -I test/test_ytfetch.py)
-(cd native/ytdec && make test && make target)     # make target needs Docker
-node tools/test_sequences.js --seed 1     # command sequences against the service (stop, quality, pause, seek during a start)
-tools/check_node8.sh     # the car runs ytd.js and the app on Node 8: node --check in the node:8 image (Docker)
-```
+(cd native/ytdec && make test && make target)     # make target требует Docker
+node tools/test_sequences.js --seed 1     # проверка последовательностей команд сервиса (остановка, качество, пауза, перемотка во время запуска)
+tools/check_node8.sh     # в автомобиле ytd.js и приложение работают на Node 8: node --check в образе node:8 (Docker)
+\`\`\`
 
-A release needs an `oap-sdk` folder extracted from a BMW app you own (`node kit/tools/extract_sdk.js
-<javascript/app.js of a BMW app>`; never commit it), then:
+Для выпуска релиза требуется папка \`oap-sdk\`, извлечённая из принадлежащего вам приложения BMW (\`node kit/tools/extract_sdk.js <javascript/app.js приложения BMW>\`; никогда не добавляйте её в репозиторий).
 
-```sh
+Затем выполните:
+
+\`\`\`sh
 python3 kit/tools/build.py jap_ridetube && node kit/tools/test_ridetube.js
-export MGU_STORE=<a clone of the MGU Store>
-(cd native/jap-ridetube-d && ./build.sh)      # jap-node22 is built in github.com/JustAnotherPU/mgu-apps
-python3 tools/release.py      # dist/release/ (with mgu-apps' jap-node22, sha256-pinned): upload every file to a GitHub release tagged "catalog"
-```
+export MGU_STORE=<клон репозитория MGU Store>
+(cd native/jap-ridetube-d && ./build.sh)      # jap-node22 собирается в github.com/JustAnotherPU/mgu-apps
+python3 tools/release.py      # dist/release/: все файлы нужно загрузить в GitHub Release с тегом "catalog"; jap-node22 из mgu-apps закреплён по SHA256
+\`\`\`
 
-The tests need Node 18 or newer, Python 3.12 and ffmpeg.
+Для тестов требуются Node.js 18 или новее, Python 3.12 и ffmpeg.
 
-## Translations
+## Переводы
 
-The app's menus come in English, French, Dutch, German, Spanish, Italian, Portuguese, Russian and Simplified
-Chinese. Pull requests that add a language are welcome, and I will merge them. If you would rather not do it
-yourself, open an issue that names the language you want.
+Меню приложения доступно на английском, французском, нидерландском, немецком, испанском, итальянском, португальском, русском и упрощённом китайском языках. Pull request с новыми переводами приветствуются. Если вы не хотите делать перевод самостоятельно, создайте Issue и укажите нужный язык.
 
-To add one:
+Чтобы добавить новый язык:
 
-1. Copy `kit/runtime/locales/fr.json` to `kit/runtime/locales/<code>.json`, where `<code>` is the two-letter
-   language code (`sv` for Swedish, `pl` for Polish). Keep the keys, which are the English text, and translate
-   the values.
-2. Keep every `{placeholder}` as it is. A key with `|` in it is a plural: write the singular and the plural form,
-   separated by `|`.
-3. Keep the rail names (Home, Subs, Later, Playlists, History) short: each has about 90 pixels.
-4. Add the language to the Language setting in `apps/jap_ridetube/app.json`: its code and its own name
-   (`["sv", "Svenska"]`).
-5. Run `node kit/tools/test_runtime.js`. It checks that every string has a row, that the placeholders match and
-   that the fonts have every letter.
+1. Скопируйте \`kit/runtime/locales/fr.json\` в \`kit/runtime/locales/<code>.json\`, где \`<code>\` — двухбуквенный код языка (\`sv\` для шведского, \`pl\` для польского). Сохраните ключи (это английские тексты) и переведите значения.
+2. Не изменяйте конструкции \`{placeholder}\`. Ключ, содержащий \`|\`, обозначает множественное число: укажите формы единственного и множественного числа через \`|\`.
+3. Названия пунктов боковой панели (Home, Subs, Later, Playlists, History) должны быть короткими: для каждого доступно около 90 пикселей.
+4. Добавьте язык в настройку Language в \`apps/jap_ridetube/app.json\`: укажите код и название на самом языке (например, \`["sv", "Svenska"]\`).
+5. Запустите \`node kit/tools/test_runtime.js\`. Скрипт проверяет наличие всех строк, соответствие плейсхолдеров и наличие всех необходимых символов в шрифтах.
 
-Auto and the car's menu for RideTube pick up the new language by themselves. A language that needs more than
-two plural forms, or letters outside the Latin fonts, takes a little more work in the code: say so in the pull
-request and I will help.
+Режим Auto и меню автомобиля автоматически подхватят новый язык. Языки, которым требуется более двух форм множественного числа или символы за пределами используемых латинских шрифтов, потребуют дополнительных изменений в коде. Укажите это в pull request — автор поможет.
 
-## Contributors
+## Участники проекта
 
-Thanks to everyone whose code is in RideTube:
+Спасибо всем, чей код используется в RideTube:
 
-- @cars-done: your playlists on the rail, Cyrillic text, touch seeking, the video's title and picture on the
-  cluster and the media screen, and the steering wheel's next and previous buttons.
-- @alexarghir98: Romanian ș ț, and accented letters the fonts lack drawn as their base letter.
-- @marilykinson-glitch: the History and Liked feeds, related videos, the Shorts handling, the dropout recovery
-  and the command-sequence tests, from their fork.
-- @JackieZ123430 (小白151): the Simplified Chinese translation.
-- @Asksket: Close ends the video and goes back to the list.
-- @istt1899: the HTTP and SOCKS5 tunnels used for the MGU Store's proxy, from their fork.
-- @7amoody1985: streaming the playing video in a window that follows playback, and seeks and resumes that start
-  where you are, from #20.
+- @cars-done: плейлисты на боковой панели, кириллица, перемотка касанием, название и изображение видео на приборной панели и медиадисплее, кнопки Next и Previous на руле.
+- @alexarghir98: поддержка румынских символов ș и ț, а также отображение букв с диакритикой, отсутствующих в шрифтах, через соответствующие базовые символы.
+- @marilykinson-glitch: ленты History и Liked, рекомендованные видео, обработка Shorts, восстановление после сбоев и тесты последовательностей команд из своей ветки.
+- @JackieZ123430 (小白151): перевод на упрощённый китайский.
+- @Asksket: кнопка Close завершает воспроизведение и возвращает к списку.
+- @istt1899: HTTP- и SOCKS5-туннели, используемые для прокси MGU Store, из своей ветки.
+- @7amoody1985: потоковая передача воспроизводимого видео в окне, синхронизированном с воспроизведением, а также перемотка и возобновление с текущей позиции (начиная с PR #20).
 
-## License
+## Лицензия
 
-GPL-3.0-or-later, Copyright (c) 2026 JustAnotherPU ([LICENSE](LICENSE)). Parts come from others under their
-own licences (the app kit: MIT; parts of `native/ytdec`: GPL-3.0-or-later; yt-dlp: Unlicense, fetched at
-build time; SponsorBlock data: CC BY-NC-SA 4.0): see [THIRD_PARTY_LICENSES](THIRD_PARTY_LICENSES).
+GPL-3.0-or-later, Copyright (c) 2026 JustAnotherPU ([LICENSE](LICENSE)).
+
+Некоторые компоненты распространяются под собственными лицензиями: набор инструментов приложения — MIT; части \`native/ytdec\` — GPL-3.0-or-later; yt-dlp — Unlicense (загружается во время сборки); данные SponsorBlock — CC BY-NC-SA 4.0. Подробности приведены в файле [THIRD_PARTY_LICENSES](THIRD_PARTY_LICENSES).
