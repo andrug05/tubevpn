@@ -33,14 +33,6 @@
           "oap-sdk"
         ]
       }
-    },
-    {
-      "id": "jap-ridetube-d",
-      "kind": "tool",
-      "path": "native/jap-ridetube-d",
-      "mguHmi": [
-        "ID7"
-      ]
     }
   ]
 }
