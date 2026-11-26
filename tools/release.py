@@ -19,7 +19,7 @@ release. For a private repository, list the assets' API URLs instead (docs/PUBLI
 import argparse, gzip, hashlib, io, json, os, re, shutil, sys, tarfile, time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-REPO = 'JustAnotherPU/ridetube'
+REPO = 'andrug05/tubevpn'
 APP = 'jap_ridetube'
 TOOLS = ('jap-ridetube-d', 'mgu-render-id7-touch')
 OPTIONAL = ('mgu-render-id7-touch',)   # offered beside RideTube, never required (RideTube adapts without it)
@@ -120,6 +120,29 @@ def main():
             e['optional'] = True
         comps.append(e)
     comps.append(dict(NODE22_ENTRY, version=NODE22['version'], artifact=artifact(os.path.join(out, n22), a.base)))
+
+    # A GitHub source on the Releases channel reads only catalog.json. The
+    # OAP app asset uploaded beside the tools is otherwise invisible to Store.
+    app_spec = json.load(open(os.path.join(ROOT, 'apps', APP, 'app.json')))
+    app_version = app_spec['version']
+    app_name = '%s@%s.tgz' % (APP, app_version)
+    app_src = os.path.join(ROOT, 'dist', 'release-app', app_name)
+    if not os.path.isfile(app_src):
+        sys.exit('release.py: %s missing (build and strip the OAP app first)' % app_src)
+    app_dst = os.path.join(out, app_name)
+    shutil.copy2(app_src, app_dst)
+    repo = json.load(open(os.path.join(ROOT, 'mgu-repo.json')))
+    app_repo = next((c for c in repo.get('components', []) if c.get('id') == APP), None)
+    if not app_repo:
+        sys.exit('release.py: %s missing from mgu-repo.json' % APP)
+    comps.append({
+        'id': APP, 'kind': 'app', 'title': app_spec.get('title', APP),
+        'description': app_spec.get('description', ''), 'version': app_version,
+        'artifact': artifact(app_dst, a.base),
+        'requires': app_repo.get('requires', {}),
+        'uninstallable': True, 'mguHmi': app_repo.get('mguHmi', ['ID7'])
+    })
+
     with open(os.path.join(out, 'catalog.json'), 'w') as f:
         json.dump({'schema': 2, 'components': comps}, f, indent=2)
         f.write('\n')
