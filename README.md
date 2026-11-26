@@ -43,7 +43,7 @@ RideTube воспроизводит видео YouTube на головном у�
 В MGU Store добавьте источник:
 
 \`\`\`
-JustAnotherPU/ridetube
+andrug05/tubevpn
 \`\`\`
 
 Когда Store спросит, за какой веткой следить, выберите **Releases**. Указывайте только \`owner/repo\`: Store не принимает суффикс \`:releases\` в конце.
