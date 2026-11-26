@@ -3201,7 +3201,7 @@ async function main() {
             await waitUntil(() => logs.some((l) => l === 'fetch ' + id + ': HTTP 403 - fetched again in 300 ms (1 of 2)'));
             fs.writeFileSync(ctl, 'done');
             await waitUntil(() => d.fetchedMs === Infinity, 4000);
-            assert.deepStrictEqual(fetchLog().argv.slice(1), ['fetch', '--no-cert-time', '--cache-dir', path.join(cache, 'ytdlp'), '--height', '720', '--', id, dir]);
+            assert.deepStrictEqual(fetchLog().argv.slice(1), ['fetch', '--cache-dir', path.join(cache, 'ytdlp'), '--height', '720', '--', id, dir]);
             await waitUntil(() => ytdecLines().filter((x) => / argv /.test(x)).length === argv + 1);
             assert.deepStrictEqual(calls.map((x) => x.m), [], 'no connect, disconnect or button');
             assert.ok(!c.evs.some((x) => x.ev === 'error' || (x.ev === 'state' && x.state !== 'playing')), JSON.stringify(c.evs));
@@ -3290,7 +3290,7 @@ async function main() {
         setMode('codec');
         d.child.kill('SIGKILL');                                 // death 1: the new ytdec reads the (VP9) index: exit 4
         await waitUntil(() => { const log = fetchLog(); return !!log && log.pid && log.pid !== pid; }, 4000);
-        assert.deepStrictEqual(fetchLog().argv.slice(1, 7), ['fetch', '--no-cert-time', '--cache-dir', path.join(cache, 'ytdlp'), '--height', '720', '--avc1']);
+        assert.deepStrictEqual(fetchLog().argv.slice(1, 7), ['fetch', '--cache-dir', path.join(cache, 'ytdlp'), '--height', '720', '--avc1']);
         await c.waitFor((x) => x.ev === 'state' && x.state === 'playing', 4000);
         await sleep(100); tick(0);
         await waitUntil(() => called('setTime').length > 0);
