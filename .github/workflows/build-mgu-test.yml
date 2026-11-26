@@ -183,7 +183,7 @@ jobs:
           # Remove both the previous release and its Git tag so the new tag
           # points at this exact source commit (not the old main commit).
           gh release delete catalog --yes --cleanup-tag || true
-          APP_VERSION="$(python3 -c \"import json; print(json.load(open('apps/jap_ridetube/app.json'))['version'])\")"
+          APP_VERSION="$(python3 -c "import json; print(json.load(open('apps/jap_ridetube/app.json'))['version'])")"
           gh release create catalog dist/release/* "dist/release-app/jap_ridetube@${APP_VERSION}.tgz" \
             --target "$GITHUB_SHA" \
             --title 'RideTube MGU Store release' \
