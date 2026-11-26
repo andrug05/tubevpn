@@ -1,273 +1,168 @@
 # RideTube
 
-[English](README.md) · [简体中文](README.zh-CN.md)
+RideTube — неофициальное приложение для просмотра YouTube на головном устройстве BMW с iDrive 7 (MGU).
+Устанавливается через MGU Store. Интерфейс приложения доступен на русском и других языках.
 
-RideTube shows in English, French, Dutch, German, Spanish, Italian, Portuguese, Russian or Simplified Chinese
-(Language setting). Chinese translation by 小白151
-(JackieZ123430). The [Chinese guide](README.zh-CN.md) includes setup, playback settings, and font coverage.
+> **Экспериментальный проект.** RideTube не связан с Google или YouTube и не поддерживается ими.
+> Используйте приложение на свой страх и риск, соблюдайте условия YouTube и законодательство вашей страны.
+> Безопасность важнее просмотра: по умолчанию изображение во время движения отключено.
 
-> **Experimental and unofficial.** RideTube is an unofficial client for YouTube. It is not affiliated with,
-> endorsed by or sponsored by Google or YouTube. Use it at your own risk. You are responsible for following
-> YouTube's Terms of Service and the laws of your country, and for using it safely: by default the picture
-> shows only while the car is parked.
+![Главный экран](docs/media/home.png)
 
-| | |
+## Возможности
+
+- **Главная**, **Подписки**, **Смотреть позже**, **История** и **Плейлисты** после входа в YouTube через код для телевизора. Пароль Google вводить в автомобиле не нужно.
+- Поиск видео, страницы каналов, главы роликов и рекомендации.
+- Управление воспроизведением с экрана и кнопок на руле.
+- Пропуск рекламных интеграций и других сегментов через SponsorBlock.
+- Звук воспроизводится через штатный медиаплеер BMW.
+- В режиме движения изображение заменяется экраном подкаста с названием, прогрессом и элементами управления; звук продолжает играть. Изображение возвращается после остановки.
+- Потоковое воспроизведение с предварительной загрузкой небольшого участка видео в память.
+- Загрузка роликов в память автомобиля для просмотра без интернета. Управление загруженными видео доступно в **Library** и на главном экране.
+- Автоматическая загрузка нескольких новых видео из подписок — опционально, только по Wi-Fi и при выполненном входе.
+- Проверка работоспособности компонентов через **Health check**.
+- Отправка диагностического отчёта разработчику — только после подтверждения пользователем. Личные данные аккаунта и история просмотров из отчёта исключаются.
+
+## Поддержка VLESS
+
+В RideTube встроен клиент **VLESS + REALITY** на базе Xray. Он позволяет направлять сетевые запросы самого RideTube к YouTube через выбранный VLESS-сервер.
+
+**Важно:** это прокси только для RideTube, а не системный VPN. Он не меняет подключение к интернету других приложений BMW.
+
+### Добавление VLESS-профиля с телефона
+
+1. Откройте меню RideTube на экране автомобиля.
+2. Выберите **Phone remote** и включите удалённое управление (**Turn on**). На экране появится QR-код.
+3. Подключите телефон к Wi-Fi-точке доступа автомобиля.
+4. Отсканируйте QR-код камерой телефона. Откроется локальная страница управления RideTube.
+5. В разделе **Add a VLESS profile** вставьте полную ссылку `vless://...`.
+6. Нажмите **Save VLESS profile on the car**.
+
+Профиль сохранится в автомобиле и будет выбран автоматически. Дождитесь статуса **VLESS proxy is ready**.
+
+Телефон должен быть подключён к Wi-Fi автомобиля во время добавления профиля. Страница управления работает непосредственно на головном устройстве — внешний сайт или облачная учётная запись не требуются. После завершения выключите **Phone remote**.
+
+### Управление профилями
+
+- Откройте в меню RideTube пункт **VLESS proxy**.
+- Выберите сохранённый профиль, чтобы подключиться через него.
+- Активный профиль отмечен галочкой; статус показывает, готов ли прокси.
+- Кнопка **Disable VLESS** отключает туннель.
+- Можно сохранить до **10 профилей**.
+- Сохранённые профили остаются в автомобиле после закрытия приложения и перезапуска головного устройства.
+- Выбрать профиль или отключить VLESS можно также на странице **Phone remote** с телефона.
+
+### Какие VLESS-ссылки поддерживаются
+
+В текущей версии поддерживается следующая комбинация:
+
+- Транспорт: **TCP**.
+- Защита: **REALITY**.
+- Flow: `xtls-rprx-vision`.
+- Encryption: `none`.
+- Обязательные параметры REALITY: `sni`, `pbk`, `sid`, `fp`.
+- Дополнительные параметры: `spx` и поддерживаемая конфигурация TCP Fragment `fm`.
+
+WebSocket, gRPC, обычный TLS и другие варианты VLESS в этой версии не поддерживаются. Используйте полную ссылку VLESS REALITY TCP Vision, полученную у своего провайдера. Если приложение сообщает об отсутствующем или неподдерживаемом параметре, запросите у провайдера ссылку в поддерживаемом формате.
+
+### Как работает маршрутизация и где хранятся данные
+
+- При включённом профиле сервис запускает Xray на головном устройстве и направляет сетевые запросы RideTube через локальный SOCKS5-прокси.
+- Если Xray запускается или недоступен, RideTube сообщает о недоступности прокси и не переключается незаметно на прямое подключение.
+- При отключённом VLESS приложение использует настройку **Use the MGU Store's proxy**. Если она выключена, соединение выполняется напрямую.
+- Данные VLESS-профиля хранятся локально в защищённом каталоге сервиса на головном устройстве. Приложение получает названия профилей и внутренние ключи, но не сами учётные данные.
+- Ссылки VLESS не отправляются в этот GitHub-репозиторий.
+- QR-код **Phone remote** содержит временный код доступа. Не передавайте его посторонним и отключайте удалённое управление после использования: пока оно включено, получивший доступ к коду может отправлять команды, искать видео и добавлять VLESS-профили.
+
+## Требования
+
+- Автомобиль BMW с iDrive 7 (MGU, интерфейс ID7).
+- Установленный MGU Store и подключение автомобиля к интернету через его uplink.
+- Компоненты, которые MGU Store устанавливает как зависимости: `mgu-render` версии 0.6.11 или новее, `mgu-deploy` 0.7.0, `mgu-python` 1.0.2 и `mgu-inputgate` 1.0.0.
+
+## Установка
+
+1. Откройте MGU Store.
+2. Добавьте источник GitHub:
+
+   ```
+   andrug05/tubevpn
+   ```
+
+3. В качестве канала источника выберите **Releases**. Указывайте только `owner/repo`, без суффикса `:releases`.
+4. Найдите **RideTube** в каталоге и установите приложение. MGU Store автоматически установит необходимые сервисы и компоненты.
+
+Дополнительно для iDrive 7 доступен компонент **mgu-render-id7-touch**. Он позволяет использовать крайнюю левую полосу экрана для более широкого меню приложения. Без него RideTube не занимает эту область.
+
+## Основные настройки
+
+- **Language** — язык интерфейса: автоматический выбор по языку автомобиля, English, Français, Nederlands, Deutsch, Español, Italiano, Português, Русский или 中文.
+- **Video while driving** — по умолчанию выключено. Не включайте эту функцию, если автомобиль не оборудован и не настроен для безопасного воспроизведения видео в движении. Всегда соблюдайте местные правила и не отвлекайте водителя.
+- **Fill the screen** — растянуть изображение на весь экран с обрезкой краёв.
+- **Video quality** — автоматический выбор качества или фиксированное 720p, 480p либо 360p.
+- **Show members-only videos** — отображение видео только для участников канала.
+- **Show Shorts** — отображение коротких видео.
+- **SponsorBlock** — пропуск выбранных категорий сегментов или показ кнопки пропуска.
+- **Parked: pause when the 12 V battery is under** — приостанавливать работу при низком заряде 12-вольтовой батареи.
+- **Sign in / Sign out** — вход или выход из аккаунта YouTube.
+
+## Проверено
+
+| Параметр | Конфигурация |
 |---|---|
-| ![Home](docs/media/home.png) | ![Player](docs/media/player.png) |
-| Home: your shelves, Continue watching first | The player, with chapters on the progress bar |
-| ![Podcast mode while driving](docs/media/driving.png) | ![Sign in](docs/media/signin.png) |
-| While driving: the sound plays on, no picture | Sign in with a code on your phone |
+| Автомобиль | BMW X5 xDrive45e (G05) |
+| Мультимедиа | iDrive 7, MGU, ID7 HMI |
+| Прошивка | P18_23w44.2-1-3 |
+| Интернет | uplink MGU Store через домашний Wi-Fi и точку доступа iPhone |
 
-Rendered on a computer with demo data (Blender open movie titles), not photographed in a car.
+Пока приложение проверено на одном автомобиле. Отзывы о работе на других моделях приветствуются в разделе Issues.
 
-RideTube plays videos on the BMW iDrive 7 head unit (MGU), installed from the MGU Store. It also includes an
-optional VLESS + REALITY proxy for RideTube's own YouTube traffic. Everything runs on the car, over the car's
-internet connection:
+## Известные ограничения
 
-- **Home**, **Subscriptions**, **Watch later**, **History** and your **Playlists**, once you sign in on the car
-  with the TV device sign-in (a code to enter on your phone; RideTube never sees your password).
-- When a list runs out, the first related video plays after a 5 s countdown. The steering wheel's next button
-  skips a segment, a video or a chapter, or goes to a related video.
-- Search, channel pages, chapters, the video quality and fill or fit for the picture.
-- Skip segments from [SponsorBlock](https://sponsor.ajay.app) (sponsors, self-promotion, intros and similar).
-- The sound plays through the car's own media player.
-- While driving, the picture is replaced by a podcast view (title, progress, controls) and the sound plays on.
-  The picture comes back when the car is parked again.
-- Videos stream. The head unit fetches about 2 minutes ahead of where you are, keeps that part in RAM (a few
-  tens of MB at most) and drops what you have watched, so stopping after five minutes uses about five minutes of
-  data. A far seek, forward or back, usually starts playing in a second or two.
-- **Download** in the player keeps a video on the car until you remove it (press **Downloaded**). Downloads play
-  with no internet, from **Library** on the rail or **On this car** on Home, signed in or not. One downloads at a
-  time, never while a video plays, and only with at least 4 GB free on the head unit.
-- A setting can download the 3, 5 or 10 newest Subscriptions videos by itself, only on Wi-Fi and only signed in.
-  It is off by default. Those videos go once watched.
-- Signed in, what you watch goes to your YouTube history, as on a TV.
-- **Send logs to the developer** (in the menu, and on the error screen when a video fails) sends RideTube's
-  recent service log and the health check result once, after you confirm, with the account details and the
-  videos you watched removed. The health check lines carry no IP or MAC address, video id or title. You get a
-  short code to add to your GitHub issue. Nothing is sent otherwise.
-- **Health check** (in the menu) checks the service and its tools, the internet connection, free space and the
-  car's audio service, one row per check.
-- **VLESS proxy**: import VLESS share links from a phone, save up to 10 profiles on the car, switch profiles
-  in RideTube, or turn the proxy off. When enabled, RideTube's YouTube requests use the selected VLESS tunnel.
+- YouTube периодически меняет механизмы получения видео. Поэтому встроенный yt-dlp может требовать обновления. При включённой настройке автоматического обновления сервис проверяет новую версию ежедневно и после неудачного запуска видео.
+- Поддерживаются видео H.264 или VP9 (profile 0), предпочтительно до 720p и 30 кадров/с. Видео только в AV1 или HDR не воспроизводятся.
+- Вход выполняется способом TV device sign-in, который используется приложениями YouTube для телевизоров.
+- При переключении с начального аудиофрагмента на основной поток может быть короткая пауза.
+- Неверные дата и время головного устройства могут вызывать проблемы с TLS-соединениями. Установите корректные дату, время и часовой пояс автомобиля.
 
-## VLESS proxy
+## Удаление
 
-RideTube has an optional VLESS client powered by the bundled Xray core. It is an **app-level proxy**: it routes
-RideTube's YouTube requests through the selected tunnel. It does not create a system-wide VPN and does not change
-the network connection used by other BMW apps.
+1. При необходимости выйдите из аккаунта YouTube в RideTube. Разрешение приложения можно также отозвать в настройках аккаунта Google.
+2. В MGU Store удалите **RideTube**, затем его сервис **jap-ridetube-d**.
 
-### Add a VLESS profile from your phone
+## Структура проекта
 
-1. Open RideTube's menu and select **Phone remote**.
-2. Press **Turn on**. The car displays a QR code.
-3. Connect your phone to the car's Wi-Fi hotspot, then scan the QR code with the phone camera.
-4. The RideTube remote page opens in the phone browser. In **Add a VLESS profile**, paste the complete
-   `vless://` share link and press **Save VLESS profile on the car**.
-5. The profile is saved on the head unit and selected automatically. Wait for the status to change to
-   **VLESS proxy is ready**.
-
-The phone and the car must be on the car's Wi-Fi hotspot while importing a profile. The remote page is served
-by the car itself; it does not require a cloud account or an external website. Turn **Phone remote** off when
-finished. It also switches itself off after its inactivity timeout.
-
-### Manage profiles in the car
-
-- Open the RideTube menu and choose **VLESS proxy** to see saved profiles and their connection state.
-- Select a profile to connect through it. The active profile is marked with a check.
-- Choose **Disable VLESS** to stop the tunnel and return to the normal proxy mode.
-- Up to **10 profiles** can be stored. Importing the same profile again updates/reuses that profile.
-- Profiles remain on the car after RideTube is closed or the head unit restarts. The active selection is restored
-  when the service starts.
-
-You can also select an already saved profile, or choose **VLESS off**, from the profile selector on the phone's
-RideTube remote page.
-
-### Supported VLESS links
-
-The current parser supports VLESS share links with this combination:
-
-- **Transport:** TCP
-- **Security:** REALITY
-- **Flow:** `xtls-rprx-vision`
-- **Encryption:** `none`
-- Required REALITY parameters: `sni`, `pbk`, `sid` and `fp`
-- Optional parameters: `spx` and the supported TCP `fm` fragment configuration
-
-Other transports and security modes — for example WebSocket, gRPC, plain TLS, or non-REALITY VLESS — are not
-supported by this build. The link must contain the complete share parameters supplied by your VLESS provider.
-If RideTube reports an unsupported or missing parameter, ask the provider for a VLESS REALITY TCP Vision link.
-
-### Routing and privacy
-
-- With a VLESS profile active, the service starts Xray locally and sends RideTube's network requests through
-  its local SOCKS5 interface. If Xray is starting or unavailable, RideTube reports the proxy as unavailable
-  rather than silently switching to a direct connection.
-- With VLESS disabled, RideTube follows its **Use the MGU Store's proxy** setting. If that setting is off,
-  RideTube connects directly.
-- VLESS credentials are stored locally in the service's protected state directory on the head unit. The app
-  receives profile names and opaque profile keys, not the credentials. The VLESS link is not uploaded to this
-  GitHub repository.
-- The phone remote uses a temporary access code shown in the car's QR code. Anyone who can access that code
-  while the remote is enabled may submit a video, search, or VLESS profile. Do not share the QR code; turn the
-  remote off after use.
-
-## Requirements
-
-- A BMW with iDrive 7 (MGU, `ID7`) and the [MGU Store](https://github.com/robertnisipeanu/mgu-store) installed.
-- The car online through the Store's uplink (`mgu-uplink`).
-- Installed for you as requirements, so keep their sources in the Store: from the Store's own source, the
-  renderer `mgu-render` 0.6.11 or newer, `mgu-deploy` 0.7.0 and `mgu-python` 1.0.2; from the Store's default
-  `cauliflowermossgrape/idrive7-apps` source, the controller gate `mgu-inputgate` 1.0.0.
-
-## Install
-
-In the MGU Store, add the source
-
-```
-andrug05/tubevpn
-```
-
-Choose **Releases** as the source channel in the Store. Enter only `owner/repo` — do not append `:releases`.
-The published `catalog` release contains the app and its matching service packages. Install **RideTube** from
-that catalog; the Store resolves the required service and runtime components automatically.
-
-Optional, on iDrive 7: Full-width touch (`mgu-render-id7-touch`, from this source) lets RideTube use the strip
-at the screen's left edge where the car's back arrow usually is, for a wider rail and tiles. Without it RideTube
-keeps out of that strip. Health check's width row says which one you have.
-
-## Settings
-
-- **Language**: Auto (follows the car's language when RideTube has it, else English), English, Français,
-  Nederlands, Deutsch, Español, Italiano, Português, Русский or 中文. YouTube's language and country follow the car's iDrive language setting (on Auto; the
-  country always), so feeds and search match what the car is set to.
-- **Video while driving**: off by default. Leave it off unless the car is coded for video in motion and only
-  passengers can see the screen. Switched on, it first shows a disclaimer and counts only once you press I agree;
-  Cancel turns it off again. You use it at your own risk: RideTube's authors are not responsible for any misuse,
-  accident, fine or damage. It takes effect only once switched on while the car is parked: pressed while driving,
-  the picture stays off until the next stop.
-- **Fill the screen**: off by default (black bars); on, the picture is cropped to fill the screen.
-- **Video quality**: auto (720p on Wi-Fi, 480p on phone data), 720p, 480p or 360p.
-- **Show members-only videos**: off by default. A channel can also be hidden from its page.
-- **Show Shorts**: off by default.
-- **SponsorBlock**, per category: skip, show a Skip button, or off.
-- **Parked: pause when the 12 V battery is under** 60, 65 (default) or 70 %, or never.
-- **Sign in** / **Sign out** in the app's menu.
-
-The parked check reads the car's speed. A reading older than 5 seconds counts as driving.
-
-## Tested on
-
-| | |
+| Каталог | Назначение |
 |---|---|
-| Car | BMW X5 xDrive45e (G05), iDrive 7 (MGU, ID7 HMI), firmware P18_23w44.2-1-3 |
-| Internet | the Store's uplink over home Wi-Fi and an iPhone hotspot |
+| `apps/jap_ridetube` | Приложение RideTube для интерфейса автомобиля |
+| `native/jap-ridetube-d` | Фоновый сервис: YouTube, профили, поиск и загрузка |
+| `native/ytdec` | Декодер видео |
+| `native/mgu-render-id7-touch` | Дополнительный компонент сенсорного интерфейса |
+| `tools/release.py` | Подготовка каталога MGU Store |
 
-One car only so far. Reports from other cars are welcome in the issues.
+## Сборка и тестирование
 
-## Known limits
+Для сборки необходимы Node.js 18 или новее, Python 3.12, ffmpeg и SDK из принадлежащего вам приложения BMW. SDK не следует добавлять в репозиторий.
 
-- yt-dlp breaks now and then when YouTube changes. With "Update yt-dlp by itself" on (the default), the service
-  fetches the newest yt-dlp release on the car, checked against the release's sha256 sums, daily and after a play
-  fails; off, a fixed RideTube release brings a new yt-dlp (see `native/jap-ridetube-d/README.md`, "Updating
-  yt-dlp").
-- H.264 or VP9 (profile 0), up to 720p with 30 fps preferred, decoded on the head unit's GPU. Videos offered
-  only in other formats (AV1, HDR) do not play.
-- Signing in uses the TV device sign-in that YouTube's TV apps use. The client id is read from YouTube's TV
-  page when you sign in; RideTube ships none.
-- The switch from the first seconds of sound to the full file may be heard as a short break.
-- A wrong head unit clock. If the head unit's date is earlier than this release's day, the clock is wrong for
-  sure. RideTube then skips one TLS check, the certificate's dates, so videos still play. The certificate must
-  still come from a trusted authority and name the right host. The app warns you once, and the menu says "Wrong
-  clock" until you set the car's date and time. The risk while it lasts: someone who holds an old, expired
-  certificate of YouTube or another host RideTube uses, with its private key, and can reach the car's traffic,
-  could pose as that host. Thumbnails do not show while the clock is wrong. See
-  `native/jap-ridetube-d/README.md`, "Security notes".
-- RideTube's service runs as root. Its control socket is open only to the RideTube app's own user. If the
-  service cannot read which user that is on a fresh install, the socket is open to every app until it can; see
-  `native/jap-ridetube-d/README.md`, "Security notes".
-
-## Uninstall
-
-1. In RideTube, **Sign out** (or later, remove "YouTube on TV" at https://myaccount.google.com/permissions):
-   uninstalling deletes the sign-in from the car, but Google keeps the grant until it is revoked.
-2. In the MGU Store, uninstall **RideTube**, then its service `jap-ridetube-d`. A bad update can be undone in the
-   Store while the previous version is kept.
-
-## Layout
-
-| Path | |
-|---|---|
-| `apps/jap_ridetube` | the app (Node 8, the iDrive's own app runtime) |
-| `kit/` | the idrive7-apps app kit, trimmed to the modules RideTube uses |
-| `native/jap-ridetube-d` | the service on the car: player, fetcher, account, search, thumbnails |
-| `native/ytdec` | the H.264 decoder that draws into the renderer's video layer |
-| `native/mgu-render-id7-touch` | Full-width touch, the optional Store tool that gives apps the screen's left edge |
-| `tools/release.py` | lays out the Store catalog (`catalog.json` and its assets) |
-
-## Build and test on a computer
+Основные проверки:
 
 ```sh
-node kit/tools/test_runtime.js && node kit/tools/test_life.js && node kit/tools/test_parked.js \
-  && node kit/tools/test_qr.js
+node kit/tools/test_runtime.js
+node kit/tools/test_life.js
+node kit/tools/test_parked.js
+node kit/tools/test_qr.js
 (cd native/jap-ridetube-d && node test/test_ytd.js && node test/test_thumb.js && python3.12 -I test/test_ytfetch.py)
-(cd native/ytdec && make test && make target)     # make target needs Docker
-node tools/test_sequences.js --seed 1     # command sequences against the service (stop, quality, pause, seek during a start)
-tools/check_node8.sh     # the car runs ytd.js and the app on Node 8: node --check in the node:8 image (Docker)
+(cd native/ytdec && make test && make target)
+node tools/test_sequences.js --seed 1
+tools/check_node8.sh
 ```
 
-A release needs an `oap-sdk` folder extracted from a BMW app you own (`node kit/tools/extract_sdk.js
-<javascript/app.js of a BMW app>`; never commit it), then:
+Подробности сборки сервисных компонентов находятся в соответствующих каталогах проекта.
 
-```sh
-python3 kit/tools/build.py jap_ridetube && node kit/tools/test_ridetube.js
-export MGU_STORE=<a clone of the MGU Store>
-(cd native/jap-ridetube-d && ./build.sh)      # jap-node22 is built in github.com/JustAnotherPU/mgu-apps
-python3 tools/release.py      # dist/release/ (with mgu-apps' jap-node22, sha256-pinned): upload every file to a GitHub release tagged "catalog"
-```
+## Участники
 
-The tests need Node 18 or newer, Python 3.12 and ffmpeg.
+Спасибо всем, кто внёс вклад в развитие RideTube, включая авторов функций управления воспроизведением, истории, рекомендаций, локализаций, сетевых туннелей и потокового видео. Полный список участников и исходных проектов доступен в истории Git.
 
-## Translations
+## Лицензия
 
-The app's menus come in English, French, Dutch, German, Spanish, Italian, Portuguese, Russian and Simplified
-Chinese. Pull requests that add a language are welcome, and I will merge them. If you would rather not do it
-yourself, open an issue that names the language you want.
-
-To add one:
-
-1. Copy `kit/runtime/locales/fr.json` to `kit/runtime/locales/<code>.json`, where `<code>` is the two-letter
-   language code (`sv` for Swedish, `pl` for Polish). Keep the keys, which are the English text, and translate
-   the values.
-2. Keep every `{placeholder}` as it is. A key with `|` in it is a plural: write the singular and the plural form,
-   separated by `|`.
-3. Keep the rail names (Home, Subs, Later, Playlists, History) short: each has about 90 pixels.
-4. Add the language to the Language setting in `apps/jap_ridetube/app.json`: its code and its own name
-   (`["sv", "Svenska"]`).
-5. Run `node kit/tools/test_runtime.js`. It checks that every string has a row, that the placeholders match and
-   that the fonts have every letter.
-
-Auto and the car's menu for RideTube pick up the new language by themselves. A language that needs more than
-two plural forms, or letters outside the Latin fonts, takes a little more work in the code: say so in the pull
-request and I will help.
-
-## Contributors
-
-Thanks to everyone whose code is in RideTube:
-
-- @cars-done: your playlists on the rail, Cyrillic text, touch seeking, the video's title and picture on the
-  cluster and the media screen, and the steering wheel's next and previous buttons.
-- @alexarghir98: Romanian ș ț, and accented letters the fonts lack drawn as their base letter.
-- @marilykinson-glitch: the History and Liked feeds, related videos, the Shorts handling, the dropout recovery
-  and the command-sequence tests, from their fork.
-- @JackieZ123430 (小白151): the Simplified Chinese translation.
-- @Asksket: Close ends the video and goes back to the list.
-- @istt1899: the HTTP and SOCKS5 tunnels used for the MGU Store's proxy, from their fork.
-- @7amoody1985: streaming the playing video in a window that follows playback, and seeks and resumes that start
-  where you are, from #20.
-
-## License
-
-GPL-3.0-or-later, Copyright (c) 2026 JustAnotherPU ([LICENSE](LICENSE)). Parts come from others under their
-own licences (the app kit: MIT; parts of `native/ytdec`: GPL-3.0-or-later; yt-dlp: Unlicense, fetched at
-build time; SponsorBlock data: CC BY-NC-SA 4.0): see [THIRD_PARTY_LICENSES](THIRD_PARTY_LICENSES).
+GPL-3.0-or-later. Авторские права и сторонние лицензии указаны в файлах [LICENSE](LICENSE) и [THIRD_PARTY_LICENSES](THIRD_PARTY_LICENSES).
