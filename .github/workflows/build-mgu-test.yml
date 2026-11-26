@@ -151,7 +151,7 @@ jobs:
           root = pathlib.Path('dist/release')
           catalog = json.loads((root / 'catalog.json').read_text())
           components = {c['id']: c for c in catalog['components']}
-          required = {'jap-ridetube-d', 'jap-node22', 'mgu-render-id7-touch'}
+          required = {'jap_ridetube', 'jap-ridetube-d', 'jap-node22', 'mgu-render-id7-touch'}
           missing = required - components.keys()
           assert not missing, f'missing catalog components: {sorted(missing)}'
           for component in components.values():
@@ -161,6 +161,10 @@ jobs:
                   assert p.is_file(), f'missing artifact: {p}'
                   assert p.stat().st_size == artifact['size'], f'size mismatch: {p}'
                   assert component.get('version'), f'missing version: {component["id"]}'
+                  assert artifact['url'].startswith('https://github.com/andrug05/tubevpn/releases/download/catalog/'), f'wrong artifact repository URL: {artifact["url"]}'
+          app = components['jap_ridetube']
+          assert app['kind'] == 'app' and app['artifact']['name'].startswith('jap_ridetube@')
+          assert app['requires']['jap-ridetube-d'] == components['jap-ridetube-d']['version']
           repo = json.loads(pathlib.Path('mgu-repo.json').read_text())
           app = next(c for c in repo['components'] if c['id'] == 'jap_ridetube')
           assert app['build']['python'] == 'kit/tools/build.py'
