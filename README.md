@@ -20,8 +20,9 @@ RideTube shows in English, French, Dutch, German, Spanish, Italian, Portuguese, 
 
 Rendered on a computer with demo data (Blender open movie titles), not photographed in a car.
 
-RideTube plays videos on the BMW iDrive 7 head unit (MGU), installed from the MGU Store. Everything runs on
-the car, over the car's own internet connection:
+RideTube plays videos on the BMW iDrive 7 head unit (MGU), installed from the MGU Store. It also includes an
+optional VLESS + REALITY proxy for RideTube's own YouTube traffic. Everything runs on the car, over the car's
+internet connection:
 
 - **Home**, **Subscriptions**, **Watch later**, **History** and your **Playlists**, once you sign in on the car
   with the TV device sign-in (a code to enter on your phone; RideTube never sees your password).
@@ -47,6 +48,69 @@ the car, over the car's own internet connection:
   short code to add to your GitHub issue. Nothing is sent otherwise.
 - **Health check** (in the menu) checks the service and its tools, the internet connection, free space and the
   car's audio service, one row per check.
+- **VLESS proxy**: import VLESS share links from a phone, save up to 10 profiles on the car, switch profiles
+  in RideTube, or turn the proxy off. When enabled, RideTube's YouTube requests use the selected VLESS tunnel.
+
+## VLESS proxy
+
+RideTube has an optional VLESS client powered by the bundled Xray core. It is an **app-level proxy**: it routes
+RideTube's YouTube requests through the selected tunnel. It does not create a system-wide VPN and does not change
+the network connection used by other BMW apps.
+
+### Add a VLESS profile from your phone
+
+1. Open RideTube's menu and select **Phone remote**.
+2. Press **Turn on**. The car displays a QR code.
+3. Connect your phone to the car's Wi-Fi hotspot, then scan the QR code with the phone camera.
+4. The RideTube remote page opens in the phone browser. In **Add a VLESS profile**, paste the complete
+   `vless://` share link and press **Save VLESS profile on the car**.
+5. The profile is saved on the head unit and selected automatically. Wait for the status to change to
+   **VLESS proxy is ready**.
+
+The phone and the car must be on the car's Wi-Fi hotspot while importing a profile. The remote page is served
+by the car itself; it does not require a cloud account or an external website. Turn **Phone remote** off when
+finished. It also switches itself off after its inactivity timeout.
+
+### Manage profiles in the car
+
+- Open the RideTube menu and choose **VLESS proxy** to see saved profiles and their connection state.
+- Select a profile to connect through it. The active profile is marked with a check.
+- Choose **Disable VLESS** to stop the tunnel and return to the normal proxy mode.
+- Up to **10 profiles** can be stored. Importing the same profile again updates/reuses that profile.
+- Profiles remain on the car after RideTube is closed or the head unit restarts. The active selection is restored
+  when the service starts.
+
+You can also select an already saved profile, or choose **VLESS off**, from the profile selector on the phone's
+RideTube remote page.
+
+### Supported VLESS links
+
+The current parser supports VLESS share links with this combination:
+
+- **Transport:** TCP
+- **Security:** REALITY
+- **Flow:** `xtls-rprx-vision`
+- **Encryption:** `none`
+- Required REALITY parameters: `sni`, `pbk`, `sid` and `fp`
+- Optional parameters: `spx` and the supported TCP `fm` fragment configuration
+
+Other transports and security modes — for example WebSocket, gRPC, plain TLS, or non-REALITY VLESS — are not
+supported by this build. The link must contain the complete share parameters supplied by your VLESS provider.
+If RideTube reports an unsupported or missing parameter, ask the provider for a VLESS REALITY TCP Vision link.
+
+### Routing and privacy
+
+- With a VLESS profile active, the service starts Xray locally and sends RideTube's network requests through
+  its local SOCKS5 interface. If Xray is starting or unavailable, RideTube reports the proxy as unavailable
+  rather than silently switching to a direct connection.
+- With VLESS disabled, RideTube follows its **Use the MGU Store's proxy** setting. If that setting is off,
+  RideTube connects directly.
+- VLESS credentials are stored locally in the service's protected state directory on the head unit. The app
+  receives profile names and opaque profile keys, not the credentials. The VLESS link is not uploaded to this
+  GitHub repository.
+- The phone remote uses a temporary access code shown in the car's QR code. Anyone who can access that code
+  while the remote is enabled may submit a video, search, or VLESS profile. Do not share the QR code; turn the
+  remote off after use.
 
 ## Requirements
 
@@ -61,14 +125,12 @@ the car, over the car's own internet connection:
 In the MGU Store, add the source
 
 ```
-JustAnotherPU/ridetube
+andrug05/tubevpn
 ```
 
-and pick **Releases** when the Store asks what to follow. Type only `owner/repo`: the Store refuses a `:releases` at the end.
-
-Then install RideTube. The Store installs its service (`jap-ridetube-d`, the player, the yt-dlp fetcher and the
-video decoder) and `jap-node22`, the Node.js 22 that the service runs on, with it. Since 0.4.0 this source carries
-`jap-node22` itself (the same file as `JustAnotherPU/mgu-apps` publishes), so you no longer need to add mgu-apps.
+Choose **Releases** as the source channel in the Store. Enter only `owner/repo` — do not append `:releases`.
+The published `catalog` release contains the app and its matching service packages. Install **RideTube** from
+that catalog; the Store resolves the required service and runtime components automatically.
 
 Optional, on iDrive 7: Full-width touch (`mgu-render-id7-touch`, from this source) lets RideTube use the strip
 at the screen's left edge where the car's back arrow usually is, for a wider rail and tiles. Without it RideTube
