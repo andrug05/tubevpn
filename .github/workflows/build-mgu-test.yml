@@ -183,7 +183,8 @@ jobs:
           # Remove both the previous release and its Git tag so the new tag
           # points at this exact source commit (not the old main commit).
           gh release delete catalog --yes --cleanup-tag || true
-          gh release create catalog dist/release/* \
+          APP_VERSION="$(python3 -c \"import json; print(json.load(open('apps/jap_ridetube/app.json'))['version'])\")"
+          gh release create catalog dist/release/* "dist/release-app/jap_ridetube@${APP_VERSION}.tgz" \
             --target "$GITHUB_SHA" \
-            --title 'RideTube MGU Store catalog' \
-            --notes 'MGU Store tools for RideTube. The RideTube app is built on the head unit from the repository branch via mgu-repo.json, using the BMW SDK donor already on the car. Includes the VLESS-enabled service, Node.js runtime and optional Full-width touch.'
+            --title 'RideTube MGU Store release' \
+            --notes 'Complete RideTube MGU Store release. Contains the prebuilt RideTube app and service tool, plus required Node.js runtime and optional Full-width touch. Add this repository to MGU Store using the Releases layout (not a branch/source-tree build).'
